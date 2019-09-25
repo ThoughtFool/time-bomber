@@ -47,18 +47,21 @@
     var childPos;
     var localLeft;
     var localTop;
-
+    var dropDiv = document.getElementById("dropper");
 
     document.addEventListener("keydown", function (value) {
         console.log(value.key);
         if (value.key === "ArrowUp") {
+            
             console.log("drop time bomb here:");
             console.log(degrees);
             clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
             bomb.classList.add("bomb");
             bomb.setAttribute("id", `bomb-${dropCount}`);
-            document.body.append(bomb);
+            container.append(bomb);
+            // document.body.append(bomb);
+            
             
             newBomb = document.getElementById(`bomb-${dropCount}`);
             console.log(newBomb);
@@ -87,7 +90,10 @@
                 newBomb.style.left = (x) + "px";
                 newBomb.style.top = (y) + "px";
 
+                newBomb.classList.add("glow");
+
         } else if (value.key === "ArrowDown") {
+            dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../../../public/assets/images/hazmat-runner-frontside.png')";
             hazRunner.classList.remove("move-left");
             hazRunner.classList.remove("move-right");
@@ -96,6 +102,7 @@
             hazRunner.classList.add("move-backward");
 
         } else if (value.key === "ArrowRight") {
+            dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../assets/images/clock-runner-xs-R.png')";
             hazRunner.classList.remove("move-left");
             hazRunner.classList.remove("move-right");
@@ -105,6 +112,7 @@
             rotateAnimationRight("clock-runner", 50);
 
         } else if (value.key === "ArrowLeft") {
+            dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../assets/images/clock-runner-xs-L.png')";
             hazRunner.classList.remove("move-left");
             hazRunner.classList.add("move-left");
@@ -139,6 +147,8 @@
         };
     });
 
+    var container = document.querySelector(".container");
+
     document.addEventListener("click", function (e) {
         xPos = e.clientX;
         yPos = e.clientY;
@@ -147,7 +157,8 @@
         clockDrop = document.getElementById("clock");
         bomb = this.createElement("DIV");
         bomb.classList.add("bomb");
-        document.body.append(bomb);
+        // document.body.append(bomb);
+        container.append(bomb);
 
         bomb.style.left = xPos + "px";
         bomb.style.top = yPos + "px";
@@ -180,6 +191,7 @@
 
         position = dropElem.getBoundingClientRect();
         bodyPos = document.body.getBoundingClientRect();
+        containerPos = container.getBoundingClientRect();
 
         console.log("dropElem");
         console.log(dropElem);

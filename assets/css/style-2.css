@@ -1,39 +1,49 @@
 body {
+    background-image: radial-gradient(rgb(23, 167, 233), purple);
     margin-left: 0px;
     margin-top: 0px;
     max-width: 99vw;
     min-width: 95vw;
-    max-height: 99vw;
-    min-height: 95vw;
+    max-height: 99vh;
+    min-height: 95vh;
+    width: 98vw;
+    height: 98vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+/* .container {
+
+} */
 .world-holder {
     position: relative;
-    padding-top: 25%;
+    /* padding-top: 25%; */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .spinner {
-    background: url("../images/clock-runner-R.png");
-    /* background: url("./clock.png"); */
     background-repeat: no-repeat;
     background-size: 643px;
     height: 643px;
     width: 643px;
-    /* position: relative; */
     position: absolute;
     display: flex;
     justify-content: center;
     text-align: center;
 }
 
+#dropper {
+    background-image: url("../images/hazmat-runner-frontside-single.png");
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
 .bomb-drop {
-    /* background-color: aqua; */
     border-radius: 50%;
     height: 100px;
     width: 100px;
-    border: rgba(255, 0, 234, 0.877) 3px dashed;
+    display: flex;
     position: relative;
     text-align: center;
 }
@@ -42,9 +52,30 @@ body {
     border-radius: 50%;
     height: 10px;
     width: 10px;
-    border: red 10px solid;
     position: absolute;
-    /* text-align: center; */
+}
+
+.glow {
+    text-align: center;
+    animation: glow 1s ease-in-out infinite alternate;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: space-around;
+}
+
+@-webkit-keyframes glow {
+    from {
+        box-shadow: 0px 0px 20px 3px #af4add;
+        /* box-shadow: 0px 0px 20px 3px #4a60dd; */
+        border: rgb(140, 0, 255) 3px darkblue;
+    }
+
+    to {
+        box-shadow: 0px 0px 15px 8px rgb(234, 0, 255);
+        border: rgba(255, 0, 234, 0.726) 10px rgb(0, 76, 139);
+        /* text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6; */
+    }
 }
 
 #clock {
@@ -77,15 +108,6 @@ body {
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
 } */
-
-body {
-    background-image: radial-gradient(rgb(23, 167, 233), purple);
-    height: 100vh;
-}
-
-#road {
-    border-bottom: 7px dashed black;
-}
 
 #runner {
     width: 200px;

@@ -1,0 +1,49 @@
+body {
+    margin: 0px;
+    background-color: aquamarine;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10vmin;
+}
+.my-container {
+    width: 85vw;
+    height: 85vh;
+    background: rgb(118, 118, 180);
+    border: 3px solid gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* .spinner-container { */
+.world-holder {    
+    width: 75vh;
+    height: 75vh;
+    background: rgb(209, 108, 218);
+    border: 3px solid gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-circle {
+    /* border-radius: 50%; */
+    width: 25%;
+    padding-bottom: 25%;
+    background: white;
+}
+
+.spinner {
+    background: url("../images/clock-runner-R.png");
+    /* background: url("./clock.png"); */
+    background-repeat: no-repeat;
+    background-size: 643px;
+    height: 643px;
+    width: 643px;
+    /* position: relative; */
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
