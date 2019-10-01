@@ -1,26 +1,41 @@
 body {
     background-image: radial-gradient(rgb(23, 167, 233), purple);
-    margin-left: 0px;
-    margin-top: 0px;
-    max-width: 99vw;
-    min-width: 95vw;
-    max-height: 99vh;
-    min-height: 95vh;
-    width: 98vw;
-    height: 98vh;
+    max-width: 1000px;
+    min-width: 800px;
+    max-height: 1000px;
+    min-height: 800px;
+    width: 800px;
+    height: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.main-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+
+.container {
+    height: 100%;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-/* .container {
 
-} */
 .world-holder {
     position: relative;
-    /* padding-top: 25%; */
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
 .spinner {
@@ -80,26 +95,13 @@ body {
 
 #clock {
     background: url("../images/clock.png");
-    /* background: url("./clock.png"); */
     background-repeat: no-repeat;
-    background-size: 425px;
-    height: 425px;
-    width: 425px;
+    background-size: auto;
+    height: 400px;
+    width: 400px;
     position: relative;
     border: 10px solid rgb(9, 226, 241);
     border-radius: 50%;
-    /* padding: 7px; */
-}
-
-#clock-test {
-    position: absolute;
-    margin-top: 0px;
-    min-width: 95vw;;
-    min-height: 95vh;
-    max-width: 99vw;
-    max-height: 99vh;
-    z-index: 99;
-    background-color: rgba(127, 255, 212, 0.068);
 }
 
 /* div {
@@ -117,7 +119,6 @@ body {
 .move-left {
     animation: walk-left 1s steps(6) infinite,
         backward 15s linear infinite;
-        /* rotate-left 8s infinite linear; */
     transition-timing-function: ease-in;
     transition: .25s;
 }
@@ -125,7 +126,6 @@ body {
 .move-right {
     animation: walk-right 1s steps(6) infinite,
         forward 15s linear infinite;
-        /* rotate-right 8s infinite linear; */
     transition-timing-function: ease-in;
     transition: .25s;
 }
@@ -179,42 +179,3 @@ body {
         background-position: 3806px;
     }
 }
-
-/* @keyframes rotate-right {
-    from {
-        transform: rotate(0deg);
-        transform-origin: center;
-    }
-
-    to {
-        transform: rotate(359deg);
-        transform-origin: center;
-    }
-}
-
-@keyframes rotate-left {
-    from {
-        transform: rotate(359deg);
-        transform-origin: center;
-    }
-
-    to {
-        transform: rotate(0deg);
-        transform-origin: center;
-    }
-} */
-
-
-/* @keyframes mymove {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-
-    100% {
-        transform-origin: center;
-    }
-} */

@@ -1,96 +1,48 @@
-    hazRunner = document.getElementById("clock-runner");
-
-    rotateElem = function (el, speed) {
-        var elem = document.getElementById(el);
-        elem.style.transform = "rotate(" + degrees + "deg)";
-        looper = setTimeout("rotateElem(\"" + el + "\"," + speed + ")", speed);
-        degrees++;
-
-        if (degrees > 359) {
-            degress = 1;
-        };
-        document.getElementById("status").innerHTML = "rotate(" + "deg)";
-
-    };
-    // document.getElementById("clock-runner").addEventListener("click", rotateElem);
-    // document.getElementById("clock-runner").addEventListener("click", myFunction);
-
-
-    function myFunction() {
-        document.getElementById("info").innerHTML = "YOU CLICKED ME!";
-        // document.getElementById("status").innerHTML = "rotate(" + "deg)";
-    };
-
-    var rotated = false;
-
-    // document.getElementById('btn-01').onclick = function () {
-
-    //     // var div = document.getElementById('clock-runner'),
-    //         deg = rotated ? 0 : 66;
-
-    //     div.style.webkitTransform = 'rotate(' + deg + 'deg)';
-    //     div.style.mozTransform = 'rotate(' + deg + 'deg)';
-    //     div.style.msTransform = 'rotate(' + deg + 'deg)';
-    //     div.style.oTransform = 'rotate(' + deg + 'deg)';
-    //     div.style.transform = 'rotate(' + deg + 'deg)';
-
-    //     rotated = !rotated;
-    // };
-
-
-    // runner functions (sprite sheet)
-
-    // hazRunner = document.getElementById("runner");
-    // hazRoad = document.getElementById("road");
-
-    var parentPos;
-    var childPos;
-    var localLeft;
-    var localTop;
+    var hazRunner = document.getElementById("clock-runner");
     var dropDiv = document.getElementById("dropper");
+    var container = document.querySelector(".container");
+    // var container = document.getElementById("game-screen");
+    var btn = document.getElementById("btn");
+    var loopRight;
+    var loopLeft;
+    var degrees = 0;
+    var dropCount = 0;
+    var x;
+    var y;
+
+    // global test vars:
+    bodyRectLeft = 0;
+    containerRectLeft = 0;
+    bodyWidth = 0;
+    bodyHeight = 0;
+    containerWidth = 0;
+    bombWidth = 0;
 
     document.addEventListener("keydown", function (value) {
-        console.log(value.key);
         if (value.key === "ArrowUp") {
-            
-            console.log("drop time bomb here:");
-            console.log(degrees);
+
             clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
             bomb.classList.add("bomb");
             bomb.setAttribute("id", `bomb-${dropCount}`);
+
+            console.log("bodyPos");
+            console.log(bodyPos);
+            console.log("bodyPos.width");
+            console.log(bodyPos.width);
+            console.log("bodyPos.height");
+            console.log(bodyPos.height);
+
             container.append(bomb);
-            // document.body.append(bomb);
-            
-            
+
             newBomb = document.getElementById(`bomb-${dropCount}`);
-            console.log(newBomb);
+
+            newBomb.style.left = (x) + "px";
+            newBomb.style.top = (y) + "px";
+
+            newBomb.classList.add("glow");
+            bombWidth = newBomb.getBoundingClientRect().width;
             dropCount++;
-
-            parentPos = document.getElementById('clock').getBoundingClientRect();
-            childPos = newBomb.getBoundingClientRect();
-
-                bodyRect = document.body.getBoundingClientRect();
-                offsetLeft = parentPos.left - bodyRect.left;
-                offsetTop = parentPos.top - bodyRect.top;
-
-                xLeft = offsetLeft - bodyRect.left;
-                console.log("xLeft");
-                console.log(xLeft);
-                yTop = offsetTop - bodyRect.top;
-                console.log("yTop");
-                console.log(yTop);
-
-                console.log("offsetLeft");
-                console.log(offsetLeft);
-
-                console.log("offsetTop");
-                console.log(offsetTop);
-
-                newBomb.style.left = (x) + "px";
-                newBomb.style.top = (y) + "px";
-
-                newBomb.classList.add("glow");
 
         } else if (value.key === "ArrowDown") {
             dropDiv.style.backgroundImage = "url('')";
@@ -121,7 +73,6 @@
             hazRunner.classList.remove("move-backward");
             rotateAnimationLeft("clock-runner", 50);
         } else if (value.key === "i" || value.key === "I") {
-            console.log("Space key selected!");
             clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
             bomb.classList.add("bomb");
@@ -147,43 +98,24 @@
         };
     });
 
-    var container = document.querySelector(".container");
-
     document.addEventListener("click", function (e) {
         xPos = e.clientX;
         yPos = e.clientY;
 
-        console.log("Space key selected!");
         clockDrop = document.getElementById("clock");
         bomb = this.createElement("DIV");
         bomb.classList.add("bomb");
-        // document.body.append(bomb);
         container.append(bomb);
 
         bomb.style.left = xPos + "px";
         bomb.style.top = yPos + "px";
-
-        console.log("xPos");
-        console.log(xPos);
-        console.log("yPos");
-        console.log(yPos);
     });
-
-    var loopRight;
-    var loopLeft;
-    var degrees = 0;
-    var elem;
-    var dropCount = 0;
-    var x;
-    var y;
-    var xx;
-    var yy;
-    dropElem = document.getElementById("dropper");
 
     function rotateAnimationRight(el, speed) {
 
         elem = document.getElementById(el);
         elem.style.transform = "rotate(" + degrees + "deg)";
+
         clearInterval(loopLeft);
         clearInterval(loopRight);
 
@@ -193,16 +125,11 @@
         bodyPos = document.body.getBoundingClientRect();
         containerPos = container.getBoundingClientRect();
 
-        console.log("dropElem");
-        console.log(dropElem);
-
         widthOffset = (position.width / 2);
         heightOffset = (position.height / 2);
 
         x = (position.left + widthOffset);
         y = (position.top + heightOffset);
-        console.log("position");
-        console.log(position);
 
         ('rotateAnimationRight(\'' + el + '\',' + speed + ')', speed);
         loopRight = setTimeout('rotateAnimationRight(\'' + el + '\',' + speed + ')', speed);
@@ -219,7 +146,139 @@
         loopLeft = setTimeout('rotateAnimationLeft(\'' + el + '\',' + speed + ')', speed);
         degrees--;
     };
-    // dx = p2.x - p1.x;
-    // dy = p2.y - p1.y;
 
-    // Math.atan2(dx, dy) * 180 / Math.PI;
+    bodyWidth = document.body.getBoundingClientRect().width;
+    console.log("bodyWidth");
+    console.log(bodyWidth);
+    bodyRectLeft = document.body.getBoundingClientRect().left;
+    console.log("bodyRectLeft");
+    console.log(bodyRectLeft);
+
+    containerTest = container.getBoundingClientRect();
+////////////////////////////////////////////////////////////////////////
+    body_X = document.body.getBoundingClientRect().left;
+    body_Y = document.body.getBoundingClientRect().top;
+
+    container_X = container.getBoundingClientRect().left;
+    container_Y = container.getBoundingClientRect().top;
+
+    containerOffset_LEFT = container.offsetLeft;
+    console.log("container.offsetLeft");
+    console.log(container.offsetLeft);
+////////////////////////////////////////////////////////////////////////
+
+    myResizeFunc = function () {
+
+        let newBodyWidth = document.body.getBoundingClientRect().width;
+        console.log("newBodyWidth");
+        console.log(newBodyWidth);
+
+        newContainerTestWidth = container.getBoundingClientRect().width;
+
+        let droppedBombs = document.getElementsByClassName("bomb");
+        for (let i = 0; i < droppedBombs.length - 1; i++) {
+            moveBomb = document.getElementById(`bomb-${i}`);
+            console.log(droppedBombs[i]);
+            console.log(moveBomb);
+
+            console.log("moveBomb.offsetLeft");
+            console.log(moveBomb.offsetLeft);
+
+            new_containerOffset_LEFT = container.offsetLeft;            
+            console.log("new_containerOffset_LEFT");
+            console.log(new_containerOffset_LEFT);
+
+            let bomb_X = moveBomb.getBoundingClientRect().left;
+            let bomb_Y = moveBomb.getBoundingClientRect().top;
+
+            ////////////////////////////////////////////////////////////////////////
+            new_body_X = document.body.getBoundingClientRect().left;
+            new_body_Y = document.body.getBoundingClientRect().top;
+
+            // new_container_X = container.getBoundingClientRect().left;
+            new_container_X = new_containerOffset_LEFT;
+            new_container_Y = container.getBoundingClientRect().top;
+
+            ////////////////////////////////////////////////////////////////////////
+            // percentBigger_X = container_X / bomb_X;
+            percentBigger_X = containerOffset_LEFT / bomb_X;
+            console.log("percentBigger_X");
+            console.log(percentBigger_X);
+
+            percentBigger_Y = container_Y / bomb_Y;
+            console.log("percentBigger_Y");
+            console.log(percentBigger_Y);
+            ////////////////////////////////////////////////////////////////////////
+            // offset_X = bomb_X - container_X;
+            offset_X = bomb_X - containerOffset_LEFT;
+            console.log("offset_X");
+            console.log(offset_X);
+
+            offset_Y = bomb_X - container_Y;
+            console.log("offset_Y");
+            console.log(offset_Y);
+            ////////////////////////////////////////////////////////////////////////
+            newPos_X = new_containerOffset_LEFT / percentBigger_X;
+            // newPos_X = new_container_X / percentBigger_X;
+            console.log("newPos_X");
+            console.log(newPos_X);
+            newPos_Y = new_container_Y / percentBigger_Y;
+            console.log("newPos_Y");
+            console.log(newPos_Y);
+            ////////////////////////////////////////////////////////////////////////
+            moveBomb.style.left = (newPos_X) + "px";
+            moveBomb.style.top = (newPos_Y) + "px";
+            ////////////////////////////////////////////////////////////////////////
+        };
+    };
+
+    btnClick = function () {
+        bodyWidth = document.body.getBoundingClientRect().width;
+        console.log("bodyWidth");
+        console.log(bodyWidth);
+        containerWidth = container.getBoundingClientRect().width;
+        console.log("containerWidth");
+        console.log(containerWidth);
+
+        bodyHeight = document.body.getBoundingClientRect().height;
+        console.log("bodyHeight");
+        console.log(bodyHeight);
+        containerHeight = container.getBoundingClientRect().height;
+        console.log("containerHeight");
+        console.log(containerHeight);
+
+        bodyRectLeft = document.body.getBoundingClientRect().left;
+        console.log("bodyRectLeft");
+        console.log(bodyRectLeft);
+        containerRectLeft = container.getBoundingClientRect().left;
+        console.log("containerRectLeft");
+        console.log(containerRectLeft);
+    };
+
+    findOffsetLeft = function (bodyWidth, bombWidth, newbodyWidth, bodyRectLeft) {
+
+        let emptyWidth = bodyWidth - bombWidth;
+        console.log("emptyWidth");
+        console.log(emptyWidth);
+
+        let percentTotal_Empty = emptyWidth / bodyWidth;
+        console.log("percentTotal_Empty");
+        console.log(percentTotal_Empty);
+
+        let percentEach_Empty = percentTotal_Empty / 2;
+        console.log("percentEach_Empty");
+        console.log(percentEach_Empty);
+
+        let newEmptySpaceWidth = percentEach_Empty * newbodyWidth;
+        console.log("newEmptySpaceWidth");
+        console.log(newEmptySpaceWidth);
+
+        let newBombRectLeft = newEmptySpaceWidth + bodyRectLeft;
+        console.log("newBombRectLeft");
+        console.log(newBombRectLeft);
+
+        return newBombRectLeft;
+    };
+
+    // window.addEventListener("resize", myResizeFunc);
+    console.log("findOffsetWidth result:");
