@@ -84,20 +84,29 @@
             //////////////////////////////////////////////////////
             console.log(coordChecker("dropper"));
             const boxToDrop = document.getElementById(await coordChecker("dropper"));
-            boxToDrop.append(bomb);
-            //////////////////////////////////////////////////////
 
-
-            newBomb = document.getElementById(`bomb-${dropCount}`);
-
-            // console.log(`x = ${x}`);
-
-            // newBomb.style.left = (x) + "px";
-            // newBomb.style.top = (y) + "px";
-
-            newBomb.classList.add("glow");
-            bombWidth = newBomb.getBoundingClientRect().width;
-            dropCount++;
+            if (boxToDrop.classList.contains("empty")) {
+                boxToDrop.append(bomb);
+                boxToDrop.classList.remove("empty");
+                
+                // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
+                //////////////////////////////////////////////////////
+                // save location to respective spot on clock-map (for socket):
+                // function mapDrop(dropLocID) {
+                    //     dropLocID
+                    // };
+                    
+                    newBomb = document.getElementById(`bomb-${dropCount}`);
+                    
+                    // console.log(`x = ${x}`);
+                    
+                    // newBomb.style.left = (x) + "px";
+                    // newBomb.style.top = (y) + "px";
+                    
+                    newBomb.classList.add("glow");
+                    bombWidth = newBomb.getBoundingClientRect().width;
+                    dropCount++;
+                };
 
         } else if (value.key === "ArrowDown") {
             // dropDiv.style.backgroundImage = "url('')";
@@ -375,7 +384,7 @@
             let dropBoxID = `drop-box-${i}`;
             let newCircle = document.createElement("div");
             newCircle.id = dropBoxID;
-            newCircle.classList.add("clock-parts", "item-box");
+            newCircle.classList.add("clock-parts", "item-box", "empty");
             newCircle.style.border = "thin dotted red";
             // newCircle.style.backgroundColor = "purple";
 
