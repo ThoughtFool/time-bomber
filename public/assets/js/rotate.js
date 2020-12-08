@@ -18,6 +18,25 @@
     containerWidth = 0;
     bombWidth = 0;
 
+    // // Your web app's Firebase configuration
+    // const firebaseConfig = {
+    //     apiKey: "AIzaSyB9uhfnF8ZvC9DsfkXfxVv6h8Mvr9Yab70",
+    //     authDomain: "time-bomber.firebaseapp.com",
+    //     databaseURL: "https://time-bomber.firebaseio.com",
+    //     projectId: "time-bomber",
+    //     storageBucket: "time-bomber.appspot.com",
+    //     messagingSenderId: "573647981740",
+    //     appId: "1:573647981740:web:e54c102ed619d89b7d6309"
+    // };
+    // // Initialize Firebase
+    // firebase.initializeApp(firebaseConfig);
+
+    // const database = firebase.database();
+
+    // database.ref().on("change", function (snap) {
+    //     console.log(snap);
+    // });
+
     document.addEventListener("keydown", function (value) {
         if (value.key === "ArrowUp") {
 
@@ -282,3 +301,64 @@
 
     // window.addEventListener("resize", myResizeFunc);
     console.log("findOffsetWidth result:");
+
+    const addCirclesBtn = document.getElementById("add-circles");
+    const mainCircle = document.getElementById("main-circle");
+
+    addCirclesBtn.addEventListener("click", () => {
+        addCircleFunc(60, 535);
+        addCirclesBtn.style.display = "none"
+    });
+
+    const dropBoxArr = [];
+    let fragment;
+
+    function addCircleFunc(numCircle, bigCircleSize) {
+        let smallCircleSize = Math.round(bigCircleSize * Math.PI / numCircle);
+        let rotation = 0;
+        for (let i = 0; i < numCircle; i++) {
+            let dropBoxID = `drop-box-${i}`;
+            let newCircle = document.createElement("div");
+            newCircle.id = dropBoxID;
+            newCircle.classList.add("clock-parts");
+            newCircle.style.backgroundColor = "purple";
+
+            mainCircle.append(newCircle);
+            let newDropBox = document.getElementById(dropBoxID);
+            newDropBox.style.position = "absolute";
+            newDropBox.style.height = `${smallCircleSize}px`;
+            newDropBox.style.width = `${smallCircleSize}px`;
+            // console.log(newDropBox.style.height);
+            
+            dropBoxArr.push(newDropBox);
+
+            let angle = 360 / numCircle;
+
+            let theta = (angle / 180) * i * Math.PI;
+
+            let posx = Math.round((bigCircleSize / 2) * (Math.cos(theta))) + 'px';
+            let posy = Math.round((bigCircleSize / 2) * (Math.sin(theta))) + 'px';
+
+            let bigCircleHeight = parseInt(window.getComputedStyle(mainCircle).height.slice(0, -2));
+
+            newDropBox.style.top = ((bigCircleHeight / 2) - parseInt(posy.slice(0, -2))) + 'px';
+            newDropBox.style.left = ((bigCircleHeight / 2) + parseInt(posx.slice(0, -2))) + 'px';
+
+            // rotation = rotation + angle;
+
+            // newDropBox.style.transform = `rotate(${rotation * 1}deg)`;
+            // newDropBox.style.transform = `translate(${bigCircleSize / 2}px)`;
+            // newDropBox.style.transform = `rotate(${rotation * -1}deg)`;
+
+            let smallMargin = -(smallCircleSize / 2);
+
+            newDropBox.style.margin = `${smallMargin}px`;
+
+            // console.log(rotation);
+
+        };
+        console.log(dropBoxArr);
+        // socket.emit("addCircle", {
+        //     circleList: dropBoxArr
+        // });
+    };

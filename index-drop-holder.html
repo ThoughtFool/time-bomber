@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,23 +11,34 @@
     <!-- <link rel="stylesheet" href="style.css"> -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
-    <link rel="stylesheet" href="assets/css/style-2.css">
+    <link rel="stylesheet" href="/public/assets/css/style-2.css">
 </head>
+
 <body>
     <div class="main-container">
         <div class="container" id="game-screen">
             <div class="world-holder">
-                <div class="clock-parts" id="outer-circle">
-                    <div class="clock-parts" id="main-circle">
-                        <!-- append small-circle(s) here -->
-                    </div>
-                </div>
-
                 <div class="spinner" id="clock-runner">
                     <div class="bomb-drop" id="dropper"></div>
                 </div>
-
                 <div id="clock">
+                    <!-- create dynamic boxes to hold drops -->
+                    <span id="drop-box-wrapper">
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                        <div class="drop-box"></div>
+                    </span>
+
+                    <!-- create hands to spin around, following runner -->
                     <div class="hand hour-hand"></div>
                     <div class="hand minute-hand"></div>
                     <div class="hand second-hand"></div>
@@ -35,17 +47,13 @@
         </div>
     </div>
 
-    <div class="aside">
-        <button type="button" id="add-circles" class="btn btn-lg btn-success">Add Circles
-        </button>
-    </div>
-    
     <!-- <div class="card" id="chat">
         <div class="card-header">chat</div>
         <div class="card-body">conversation starts here...</div>
     </div> -->
     <!-- <script src="./dist/main.js"></script> -->
-    <script src="assets/js/rotate.js"></script>
+    <script src="/public/assets/js/rotate.js"></script>
     <!-- <script src="./rotate-2.js"></script> -->
 </body>
+
 </html>
