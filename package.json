@@ -1,24 +1,24 @@
 {
-  "name": "time-bomber",
-  "version": "1.0.0",
-  "description": "Simple mult-player game.",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "build": "webpack"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ThoughtFool/time-bomber.git"
-  },
-  "author": "Heyou ThoughtFool",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ThoughtFool/time-bomber/issues"
-  },
-  "homepage": "https://github.com/ThoughtFool/time-bomber#readme",
-  "dependencies": {
-    "express": "^4.17.1",
-    "webpack": "^4.41.0"
-  }
+    "name": "time-bomber",
+    "version": "1.0.0",
+    "description": "Simple mult-player game.",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "build": "webpack"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ThoughtFool/time-bomber.git"
+    },
+    "author": "Heyou ThoughtFool",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ThoughtFool/time-bomber/issues"
+    },
+    "homepage": "https://github.com/ThoughtFool/time-bomber#readme",
+    "dependencies": {
+        "express": "^4.17.1",
+        "webpack": "^4.41.0"
+    }
 }

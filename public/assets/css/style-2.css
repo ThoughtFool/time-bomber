@@ -60,10 +60,21 @@ body {
 }
 
 #dropper {
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+    border: #af4add solid 1px;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+}
+
+#clock-runner {
     background-image: url("../images/hazmat-runner-frontside-single.png");
     background-repeat: no-repeat;
     background-size: 100%;
 }
+
 .bomb-drop {
     border-radius: 50%;
     height: 100px;
@@ -77,6 +88,9 @@ body {
     border-radius: 50%;
     height: 10px;
     width: 10px;
+    top: 50%;
+    left: 50%;
+    margin: -5px 0px 0px -5px;
     position: absolute;
 }
 

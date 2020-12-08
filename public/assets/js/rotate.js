@@ -1,5 +1,5 @@
     var hazRunner = document.getElementById("clock-runner");
-    var dropDiv = document.getElementById("dropper");
+    // var dropDiv = document.getElementById("dropper");
     var container = document.querySelector(".container");
     // var container = document.getElementById("game-screen");
     var btn = document.getElementById("btn");
@@ -37,10 +37,10 @@
     //     console.log(snap);
     // });
 
-    document.addEventListener("keydown", function (value) {
+    document.addEventListener("keydown", async function (value) {
         if (value.key === "ArrowUp") {
 
-            clockDrop = document.getElementById("clock");
+            // clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
             bomb.classList.add("bomb");
             bomb.setAttribute("id", `bomb-${dropCount}`);
@@ -52,19 +52,55 @@
             console.log("bodyPos.height");
             console.log(bodyPos.height);
 
-            container.append(bomb);
+            // container.append(bomb);
+            //////////////////////////////////////////////////////
+            // create cartesian coord function to check if (x, y) are inside of boxDrop array
+            console.log("=================== itemBoxArray ===================");
+
+
+
+            function coordChecker(dropperID) {
+                let dropper = document.getElementById(dropperID);
+                let dropperRect = dropper.getBoundingClientRect();
+                let itemBoxArray = document.querySelectorAll(".item-box");
+                // console.log(itemBoxArray);
+                for (let i = 0; i < itemBoxArray.length; i++) {
+                    let dropArrItem = itemBoxArray[i].getBoundingClientRect();
+                    console.log("dropArrItem");
+                    console.log(dropArrItem);
+
+                    console.log("dropperRect");
+                    console.log(dropperRect);
+
+                    if (dropArrItem.left < dropperRect.right &&
+                        dropArrItem.right > dropperRect.left &&
+                        dropArrItem.top < dropperRect.bottom &&
+                        dropArrItem.bottom > dropperRect.top) {
+                        return itemBoxArray[i].id;
+                    };
+                };
+            };
+
+            //////////////////////////////////////////////////////
+            console.log(coordChecker("dropper"));
+            const boxToDrop = document.getElementById(await coordChecker("dropper"));
+            boxToDrop.append(bomb);
+            //////////////////////////////////////////////////////
+
 
             newBomb = document.getElementById(`bomb-${dropCount}`);
 
-            newBomb.style.left = (x) + "px";
-            newBomb.style.top = (y) + "px";
+            // console.log(`x = ${x}`);
+
+            // newBomb.style.left = (x) + "px";
+            // newBomb.style.top = (y) + "px";
 
             newBomb.classList.add("glow");
             bombWidth = newBomb.getBoundingClientRect().width;
             dropCount++;
 
         } else if (value.key === "ArrowDown") {
-            dropDiv.style.backgroundImage = "url('')";
+            // dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../../../public/assets/images/hazmat-runner-frontside.png')";
             hazRunner.classList.remove("move-left");
             hazRunner.classList.remove("move-right");
@@ -73,7 +109,7 @@
             hazRunner.classList.add("move-backward");
 
         } else if (value.key === "ArrowRight") {
-            dropDiv.style.backgroundImage = "url('')";
+            // dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../assets/images/clock-runner-xs-R.png')";
             hazRunner.classList.remove("move-left");
             hazRunner.classList.remove("move-right");
@@ -83,7 +119,7 @@
             rotateAnimationRight("clock-runner", 50);
 
         } else if (value.key === "ArrowLeft") {
-            dropDiv.style.backgroundImage = "url('')";
+            // dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../assets/images/clock-runner-xs-L.png')";
             hazRunner.classList.remove("move-left");
             hazRunner.classList.add("move-left");
@@ -91,6 +127,7 @@
             hazRunner.classList.remove("move-forward");
             hazRunner.classList.remove("move-backward");
             rotateAnimationLeft("clock-runner", 50);
+
         } else if (value.key === "i" || value.key === "I") {
             clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
@@ -117,18 +154,18 @@
         };
     });
 
-    document.addEventListener("click", function (e) {
-        xPos = e.clientX;
-        yPos = e.clientY;
+    // document.addEventListener("click", function (e) {
+    //     xPos = e.clientX;
+    //     yPos = e.clientY;
 
-        clockDrop = document.getElementById("clock");
-        bomb = this.createElement("DIV");
-        bomb.classList.add("bomb");
-        container.append(bomb);
+    //     clockDrop = document.getElementById("clock");
+    //     bomb = this.createElement("DIV");
+    //     bomb.classList.add("bomb");
+    //     container.append(bomb);
 
-        bomb.style.left = xPos + "px";
-        bomb.style.top = yPos + "px";
-    });
+    //     bomb.style.left = xPos + "px";
+    //     bomb.style.top = yPos + "px";
+    // });
 
     function rotateAnimationRight(el, speed) {
 
@@ -150,17 +187,35 @@
         x = (position.left + widthOffset);
         y = (position.top + heightOffset);
 
-        ('rotateAnimationRight(\'' + el + '\',' + speed + ')', speed);
+        // ('rotateAnimationRight(\'' + el + '\',' + speed + ')', speed);
         loopRight = setTimeout('rotateAnimationRight(\'' + el + '\',' + speed + ')', speed);
         degrees++;
     };
 
     function rotateAnimationLeft(el, speed) {
 
+        // elem = document.getElementById(el);
+        // elem.style.transform = "rotate(" + degrees + "deg)";
+        // clearInterval(loopRight);
+        // clearInterval(loopLeft);
+
         elem = document.getElementById(el);
         elem.style.transform = "rotate(" + degrees + "deg)";
+
         clearInterval(loopRight);
         clearInterval(loopLeft);
+
+        dropElem = document.getElementById("dropper");
+
+        position = dropElem.getBoundingClientRect();
+        bodyPos = document.body.getBoundingClientRect();
+        containerPos = container.getBoundingClientRect();
+
+        widthOffset = (position.width / 2);
+        heightOffset = (position.height / 2);
+
+        x = (position.left + widthOffset);
+        y = (position.top + heightOffset);
 
         loopLeft = setTimeout('rotateAnimationLeft(\'' + el + '\',' + speed + ')', speed);
         degrees--;
@@ -174,7 +229,7 @@
     console.log(bodyRectLeft);
 
     containerTest = container.getBoundingClientRect();
-////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
     body_X = document.body.getBoundingClientRect().left;
     body_Y = document.body.getBoundingClientRect().top;
 
@@ -184,7 +239,7 @@
     containerOffset_LEFT = container.offsetLeft;
     console.log("container.offsetLeft");
     console.log(container.offsetLeft);
-////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
 
     myResizeFunc = function () {
 
@@ -203,7 +258,7 @@
             console.log("moveBomb.offsetLeft");
             console.log(moveBomb.offsetLeft);
 
-            new_containerOffset_LEFT = container.offsetLeft;            
+            new_containerOffset_LEFT = container.offsetLeft;
             console.log("new_containerOffset_LEFT");
             console.log(new_containerOffset_LEFT);
 
@@ -320,8 +375,9 @@
             let dropBoxID = `drop-box-${i}`;
             let newCircle = document.createElement("div");
             newCircle.id = dropBoxID;
-            newCircle.classList.add("clock-parts");
-            newCircle.style.backgroundColor = "purple";
+            newCircle.classList.add("clock-parts", "item-box");
+            newCircle.style.border = "thin dotted red";
+            // newCircle.style.backgroundColor = "purple";
 
             mainCircle.append(newCircle);
             let newDropBox = document.getElementById(dropBoxID);
@@ -329,7 +385,7 @@
             newDropBox.style.height = `${smallCircleSize}px`;
             newDropBox.style.width = `${smallCircleSize}px`;
             // console.log(newDropBox.style.height);
-            
+
             dropBoxArr.push(newDropBox);
 
             let angle = 360 / numCircle;
