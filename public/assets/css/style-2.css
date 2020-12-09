@@ -3,40 +3,84 @@
 } */
 body {
     background-image: radial-gradient(rgb(23, 167, 233), purple);
-    max-width: 1000px;
+    margin: 0px;
+    /* max-width: 1000px; */
     min-width: 800px;
     max-height: 1000px;
     min-height: 800px;
-    width: 800px;
-    height: 800px;
+    /* width: 800px;
+    height: 800px; */
+
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding-left: 5vw;
+    /* justify-content: center; */
+    /* padding-left: 5vw; */
     overflow-x: hidden;
     overflow-y: hidden;
 }
 
 .main-container {
-    width: 80%;
-    height: 80%;
-    display: flex;
-    align-items: center;
-    justify-content: center;    
-}
-
-.aside {
-    width: 20%;
-    height: 80%;
-    background-image: linear-gradient(rgba(161, 44, 230, 0.472), rgba(128, 0, 128, 0.342));
-}
-
-.container {
-    height: 100%;
     width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* border: #af4add 1px dashed; */
+    /* top: 50%; */
+    /* left: 50%; */
+    /* width:30em;
+    height:18em; */
+    /* margin-top: -9em; */
+    /*set to a negative number 1/2 of your height*/
+    /* margin-left: -15em; */
+    /*set to a negative number 1/2 of your width*/
+    position:fixed;
+    border: #af4add solid 3px;
+}
+
+.container {
+    /* width: 100%; */
+    /* height: 80%; */
+    /* left: 25%; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.button-box {
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0px 10px 50px rgba(255, 0, 255, 0.568);
+}
+
+#add-circles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(15, 1, 15);
+    font-size: large;
+    font-weight: bold;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: #af4add 2px;
+    background-image: linear-gradient(rgba(28, 24, 223, 0.801), rgba(255, 5, 255, 0.596));
+}
+
+#add-circles:hover {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.849), rgba(255, 5, 255, 0.678));
+    color: white;
+    font-size: large;
+    font-weight: bold;
+}
+
+#add-circles:active {
+    background-color: rgb(89, 0, 255);
+    box-shadow: 0 5px rgba(81, 49, 88, 0.787);
+    transform: translateY(2px);
 }
 
 .world-holder {
@@ -70,7 +114,7 @@ body {
 }
 
 #clock-runner {
-    background-image: url("../images/hazmat-runner-frontside-single.png");
+    /* background-image: url("../images/clock-runner-xs-R.png"); */
     background-repeat: no-repeat;
     background-size: 100%;
 }
@@ -234,4 +278,56 @@ body {
     height: 100%;
     width: 100%;
     position: relative;
+}
+
+/* game navi: */
+
+.quarter {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    transform:rotate(45deg);
+    transform-origin: 50% 50%;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.quarter:hover {
+    background-color: rgb(187, 67, 243);
+}
+
+.quarter1 {
+    top: -25%;
+    left: 25%;
+    background-color: rgb(24, 5, 42);
+    border-radius: 100% 0 0 0;
+}
+
+.quarter2 {
+    top: 25%;
+    right: -25%;
+    background-color: rgb(33, 33, 121);
+    border-radius: 0 100% 0 0;
+}
+
+.quarter3 {
+    bottom: 25%;
+    left: -25%;
+    background-color: rgb(33, 33, 121);
+    border-radius: 0 0 0 100%;
+}
+
+.quarter4 {
+    bottom: -25%;
+    right: 25%;
+    background-color: rgb(24, 5, 42);
+    border-radius: 0 0 100% 0;
+}
+
+.cutout {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(152, 241, 9);
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
 }
