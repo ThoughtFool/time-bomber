@@ -1,3 +1,4 @@
+    let socket = io();
     var hazRunner = document.getElementById("clock-runner");
     // var dropDiv = document.getElementById("dropper");
     var container = document.querySelector(".container");
@@ -18,9 +19,12 @@
     containerWidth = 0;
     bombWidth = 0;
 
+
+
+    
     // // Your web app's Firebase configuration
     // const firebaseConfig = {
-    //     apiKey: "AIzaSyB9uhfnF8ZvC9DsfkXfxVv6h8Mvr9Yab70",
+        //     apiKey: "AIzaSyB9uhfnF8ZvC9DsfkXfxVv6h8Mvr9Yab70",
     //     authDomain: "time-bomber.firebaseapp.com",
     //     databaseURL: "https://time-bomber.firebaseio.com",
     //     projectId: "time-bomber",
@@ -37,13 +41,32 @@
     //     console.log(snap);
     // });
 
+    function spawnBomb(dropCount, boxDropID) {
+
+        let bomb = document.createElement("DIV");
+        bomb.classList.add("bomb", "glow");
+        bomb.setAttribute("id", `bomb-${dropCount}`);
+        
+        let boxToDrop = document.getElementById(boxDropID);
+        boxToDrop.append(bomb);
+        boxToDrop.classList.remove("empty");
+        boxToDrop.classList.add("boom");
+
+    };
+
+    socket.on("addBombNow", (data) => {
+        console.log("data");
+        console.log(data);
+        spawnBomb(data.dropCount, data.boxDropID);
+    });
+
     document.addEventListener("keydown", async function (value) {
         if (value.key === "ArrowUp") {
-
+            
             // clockDrop = document.getElementById("clock");
-            bomb = this.createElement("DIV");
-            bomb.classList.add("bomb");
-            bomb.setAttribute("id", `bomb-${dropCount}`);
+            // bomb = this.createElement("DIV");
+            // bomb.classList.add("bomb");
+            // bomb.setAttribute("id", `bomb-${dropCount}`);
 
             console.log("bodyPos");
             console.log(bodyPos);
@@ -56,7 +79,7 @@
             //////////////////////////////////////////////////////
             // create cartesian coord function to check if (x, y) are inside of boxDrop array
             console.log("=================== itemBoxArray ===================");
-
+            
 
 
             function coordChecker(dropperID) {
@@ -68,7 +91,7 @@
                     let dropArrItem = itemBoxArray[i].getBoundingClientRect();
                     console.log("dropArrItem");
                     console.log(dropArrItem);
-
+                    
                     console.log("dropperRect");
                     console.log(dropperRect);
 
@@ -76,35 +99,41 @@
                         dropArrItem.right > dropperRect.left &&
                         dropArrItem.top < dropperRect.bottom &&
                         dropArrItem.bottom > dropperRect.top) {
-                        return itemBoxArray[i].id;
+                            return itemBoxArray[i].id;
+                        };
                     };
                 };
-            };
-
-            //////////////////////////////////////////////////////
-            console.log(coordChecker("dropper"));
-            const boxToDrop = document.getElementById(await coordChecker("dropper"));
-
-            if (boxToDrop.classList.contains("empty")) {
-                boxToDrop.append(bomb);
-                boxToDrop.classList.remove("empty");
                 
-                // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
+                //////////////////////////////////////////////////////
+                console.log(coordChecker("dropper"));
+                const boxToDrop = document.getElementById(await coordChecker("dropper"));
+                
+                if (boxToDrop.classList.contains("empty")) {
+                    socket.emit("addBombNow", {
+                        dropCount: dropCount,
+                        boxDropID: boxToDrop.id                        
+                        // boxToDrop.append(bomb);
+                        // boxToDrop.classList.remove("empty");
+                        // boxToDrop.classList.add("boom");
+                        
+                    });
+
+                    // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
                 //////////////////////////////////////////////////////
                 // save location to respective spot on clock-map (for socket):
                 // function mapDrop(dropLocID) {
                     //     dropLocID
                     // };
                     
-                    newBomb = document.getElementById(`bomb-${dropCount}`);
+                    // newBomb = document.getElementById(`bomb-${dropCount}`);
                     
                     // console.log(`x = ${x}`);
                     
                     // newBomb.style.left = (x) + "px";
                     // newBomb.style.top = (y) + "px";
                     
-                    newBomb.classList.add("glow");
-                    bombWidth = newBomb.getBoundingClientRect().width;
+                    // newBomb.classList.add("glow");
+                    // bombWidth = newBomb.getBoundingClientRect().width;
                     dropCount++;
                 };
 
@@ -423,7 +452,4 @@
 
         };
         console.log(dropBoxArr);
-        // socket.emit("addCircle", {
-        //     circleList: dropBoxArr
-        // });
     };
