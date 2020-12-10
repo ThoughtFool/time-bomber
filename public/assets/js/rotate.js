@@ -63,7 +63,7 @@
 
         
         
-        if (value.key === "ArrowUp" || value.target.id === "nav-up") {
+        if (value.key === "ArrowDown" || value.target.id === "nav-down") {
 
             // clockDrop = document.getElementById("clock");
             // bomb = this.createElement("DIV");
@@ -141,7 +141,7 @@
                 dropCount++;
             };
 
-        } else if (value.key === "ArrowDown" || value.target.id === "nav-down") {
+        } else if (value.key === "ArrowUp" || value.target.id === "nav-up") {
             // dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../../../public/assets/images/hazmat-runner-frontside.png')";
             hazRunner.classList.remove("move-left");
