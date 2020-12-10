@@ -41,10 +41,11 @@
     //     console.log(snap);
     // });
 
-    function spawnBomb(dropCount, boxDropID) {
+    function spawnBomb(dropCount, boxDropID, bombClass, activeBomb) {
 
         let bomb = document.createElement("DIV");
-        bomb.classList.add("bomb", "glow");
+        bomb.classList.add("bomb", bombClass, activeBomb);
+        // bomb.classList.add("bomb", "glow");
         bomb.setAttribute("id", `bomb-${dropCount}`);
         
         let boxToDrop = document.getElementById(boxDropID);
@@ -57,7 +58,7 @@
     socket.on("addBombNow", (data) => {
         console.log("data");
         console.log(data);
-        spawnBomb(data.dropCount, data.boxDropID);
+        spawnBomb(data.dropCount, data.boxDropID, data.bombClass, data.activeBomb);
     });
 
     document.addEventListener("keydown", async function (value) {
@@ -111,7 +112,9 @@
                 if (boxToDrop.classList.contains("empty")) {
                     socket.emit("addBombNow", {
                         dropCount: dropCount,
-                        boxDropID: boxToDrop.id                        
+                        boxDropID: boxToDrop.id,
+                        bombClass: "glow",
+                        activeBomb: "inactive"
                         // boxToDrop.append(bomb);
                         // boxToDrop.classList.remove("empty");
                         // boxToDrop.classList.add("boom");
