@@ -56,14 +56,15 @@
     };
 
     socket.on("addBombNow", (data) => {
-        console.log("data");
-        console.log(data);
         spawnBomb(data.dropCount, data.boxDropID, data.bombClass, data.activeBomb);
     });
 
-    document.addEventListener("keydown", async function (value) {
-        if (value.key === "ArrowUp") {
-            
+    async function naviCtrl(value) {
+
+        
+        
+        if (value.key === "ArrowUp" || value.target.id === "nav-up") {
+
             // clockDrop = document.getElementById("clock");
             // bomb = this.createElement("DIV");
             // bomb.classList.add("bomb");
@@ -80,7 +81,7 @@
             //////////////////////////////////////////////////////
             // create cartesian coord function to check if (x, y) are inside of boxDrop array
             console.log("=================== itemBoxArray ===================");
-            
+
 
 
             function coordChecker(dropperID) {
@@ -92,7 +93,7 @@
                     let dropArrItem = itemBoxArray[i].getBoundingClientRect();
                     console.log("dropArrItem");
                     console.log(dropArrItem);
-                    
+
                     console.log("dropperRect");
                     console.log(dropperRect);
 
@@ -100,47 +101,47 @@
                         dropArrItem.right > dropperRect.left &&
                         dropArrItem.top < dropperRect.bottom &&
                         dropArrItem.bottom > dropperRect.top) {
-                            return itemBoxArray[i].id;
-                        };
+                        return itemBoxArray[i].id;
                     };
                 };
-                
-                //////////////////////////////////////////////////////
-                console.log(coordChecker("dropper"));
-                const boxToDrop = document.getElementById(await coordChecker("dropper"));
-                
-                if (boxToDrop.classList.contains("empty")) {
-                    socket.emit("addBombNow", {
-                        dropCount: dropCount,
-                        boxDropID: boxToDrop.id,
-                        bombClass: "glow",
-                        activeBomb: "inactive"
-                        // boxToDrop.append(bomb);
-                        // boxToDrop.classList.remove("empty");
-                        // boxToDrop.classList.add("boom");
-                        
-                    });
+            };
 
-                    // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
+            //////////////////////////////////////////////////////
+            console.log(coordChecker("dropper"));
+            const boxToDrop = document.getElementById(await coordChecker("dropper"));
+
+            if (boxToDrop.classList.contains("empty")) {
+                socket.emit("addBombNow", {
+                    dropCount: dropCount,
+                    boxDropID: boxToDrop.id,
+                    bombClass: "glow",
+                    activeBomb: "inactive"
+                    // boxToDrop.append(bomb);
+                    // boxToDrop.classList.remove("empty");
+                    // boxToDrop.classList.add("boom");
+
+                });
+
+                // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
                 //////////////////////////////////////////////////////
                 // save location to respective spot on clock-map (for socket):
                 // function mapDrop(dropLocID) {
-                    //     dropLocID
-                    // };
-                    
-                    // newBomb = document.getElementById(`bomb-${dropCount}`);
-                    
-                    // console.log(`x = ${x}`);
-                    
-                    // newBomb.style.left = (x) + "px";
-                    // newBomb.style.top = (y) + "px";
-                    
-                    // newBomb.classList.add("glow");
-                    // bombWidth = newBomb.getBoundingClientRect().width;
-                    dropCount++;
-                };
+                //     dropLocID
+                // };
 
-        } else if (value.key === "ArrowDown") {
+                // newBomb = document.getElementById(`bomb-${dropCount}`);
+
+                // console.log(`x = ${x}`);
+
+                // newBomb.style.left = (x) + "px";
+                // newBomb.style.top = (y) + "px";
+
+                // newBomb.classList.add("glow");
+                // bombWidth = newBomb.getBoundingClientRect().width;
+                dropCount++;
+            };
+
+        } else if (value.key === "ArrowDown" || value.target.id === "nav-down") {
             // dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../../../public/assets/images/hazmat-runner-frontside.png')";
             hazRunner.classList.remove("move-left");
@@ -149,7 +150,7 @@
             hazRunner.classList.remove("move-backward");
             hazRunner.classList.add("move-backward");
 
-        } else if (value.key === "ArrowRight") {
+        } else if (value.key === "ArrowRight" || value.target.id === "nav-right") {
             // dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../assets/images/clock-runner-xs-R.png')";
             hazRunner.classList.remove("move-left");
@@ -159,7 +160,7 @@
             hazRunner.classList.add("move-right");
             rotateAnimationRight("clock-runner", 50);
 
-        } else if (value.key === "ArrowLeft") {
+        } else if (value.key === "ArrowLeft" || value.target.id === "nav-left") {
             // dropDiv.style.backgroundImage = "url('')";
             hazRunner.style.background = "url('../assets/images/clock-runner-xs-L.png')";
             hazRunner.classList.remove("move-left");
@@ -193,7 +194,15 @@
             bomb.classList.add("bomb");
             clockDrop.append(bomb);
         };
-    });
+    };
+    //     alert(value);
+    //     console.log(value);
+    // }
+
+    // document.querySelector(".quarter1").ontouchstart = touchNav;
+    document.addEventListener("touchstart", naviCtrl, false);
+
+    document.addEventListener("keydown", naviCtrl, false);
 
     // document.addEventListener("click", function (e) {
     //     xPos = e.clientX;
