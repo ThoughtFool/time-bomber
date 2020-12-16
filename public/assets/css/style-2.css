@@ -5,14 +5,16 @@ body {
     background-image: radial-gradient(rgb(23, 167, 233), purple);
     margin: 0px;
     /* max-width: 1000px; */
-    min-width: 800px;
+    /* min-width: 800px;
     max-height: 1000px;
-    min-height: 800px;
+    min-height: 800px; */
     /* width: 800px;
     height: 800px; */
 
-    width: 100vw;
+    width: 100vh;
     height: 100vh;
+    max-width: 100vh;
+
     display: flex;
     align-items: center;
     /* justify-content: center; */
@@ -36,7 +38,7 @@ body {
     /*set to a negative number 1/2 of your height*/
     /* margin-left: -15em; */
     /*set to a negative number 1/2 of your width*/
-    position:fixed;
+    position: fixed;
     border: #af4add solid 3px;
 }
 
@@ -148,7 +150,29 @@ body {
 }
 
 .invisible {
-    box-shadow: 0px 0px 7px 8px rgba(172, 255, 47, 0.568);
+    box-shadow: 0px 0px 7px 8px rgba(108, 244, 253, 0.356);
+    /* border-radius: 50%;
+    box-shadow: 0 0 20px rgb(127, 153, 127),
+        0 0 40px rgb(127, 153, 127),
+        0 0 60px rgb(127, 153, 127),
+        0 0 80px rgb(127, 153, 127),
+        0 0 120px rgb(127, 153, 127),
+        0 0 220px rgb(127, 153, 127),
+        0 0 320px rgb(127, 153, 127); */
+    transition: 3s;
+}
+
+/* test explosion effect: */
+.kaboom {
+    /* box-shadow: 0 0 0 30px rgb(83, 224, 83),
+    0 0 0 60px rgba(186, 224, 83, 0.897),
+    0 0 0 100px rgba(224, 222, 83, 0.877),
+    0 0 0 120px rgba(82, 137, 226, 0.87),
+    0 0 0 200px rgba(214, 37, 199, 0.836),
+    0 0 0 400px rgba(165, 27, 124, 0.829),
+    0 0 0 450px rgba(63, 235, 63, 0.884); */
+    
+    animation: explode .25s ease-in-out 5 alternate;
 }
 
 @-webkit-keyframes glow {
@@ -161,6 +185,20 @@ body {
     to {
         box-shadow: 0px 0px 15px 8px rgb(234, 0, 255);
         border: rgba(255, 0, 234, 0.726) 10px rgb(0, 76, 139);
+        /* text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6; */
+    }
+}
+
+@-webkit-keyframes explode {
+    from {
+        box-shadow: 0px 0px 20px 3px #4a9bdde8;
+        /* box-shadow: 0px 0px 20px 3px #4a60dd; */
+        /* border: rgb(140, 0, 255) 3px darkblue; */
+    }
+
+    to {
+        box-shadow: 0px 0px 15px 125px rgba(255, 0, 255, 0.897);
+        /* border: rgba(255, 0, 234, 0.726) 10px rgb(0, 76, 139); */
         /* text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6; */
     }
 }
@@ -262,6 +300,8 @@ body {
     top: 50%;
     background-color: blueviolet;
     position: absolute;
+    transition: 3s;
+
     /* height: calc(400px / 12);
     width: calc(400px / 12);
     margin: calc(-(33px / 2)); */
@@ -286,7 +326,7 @@ body {
 
 /* game navi: */
 .arrowNav {
-    transform:rotate(-45deg);
+    transform: rotate(-45deg);
     left: 50%;
     top: 50%;
     color: ivory;
@@ -300,7 +340,7 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    transform:rotate(45deg);
+    transform: rotate(45deg);
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -328,7 +368,7 @@ body {
 }
 
 /* LEFT NAV: */
-.quarter3 { 
+.quarter3 {
     bottom: 20%;
     left: -22%;
     transform-origin: top left;

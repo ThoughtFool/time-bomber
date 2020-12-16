@@ -11,6 +11,12 @@
     var x;
     var y;
 
+    let itemBoxCoords = [];
+    let user = {
+        health: 100,
+        bombCount: 10
+    };
+
     // global test vars:
     bodyRectLeft = 0;
     containerRectLeft = 0;
@@ -21,10 +27,10 @@
 
 
 
-    
+
     // // Your web app's Firebase configuration
     // const firebaseConfig = {
-        //     apiKey: "AIzaSyB9uhfnF8ZvC9DsfkXfxVv6h8Mvr9Yab70",
+    //     apiKey: "AIzaSyB9uhfnF8ZvC9DsfkXfxVv6h8Mvr9Yab70",
     //     authDomain: "time-bomber.firebaseapp.com",
     //     databaseURL: "https://time-bomber.firebaseio.com",
     //     projectId: "time-bomber",
@@ -47,12 +53,12 @@
         bomb.classList.add("bomb", bombClass, activeBomb);
         // bomb.classList.add("bomb", "glow");
         bomb.setAttribute("id", `bomb-${dropCount}`);
-        
+
         let boxToDrop = document.getElementById(boxDropID);
         boxToDrop.append(bomb);
         boxToDrop.classList.remove("empty");
-        boxToDrop.classList.add("boom");
-
+        boxToDrop.classList.add(bombClass);
+        boxToDrop.classList.add("boom-box");
     };
 
     socket.on("addBombNow", (data) => {
@@ -61,8 +67,8 @@
 
     async function naviCtrl(value) {
 
-        
-        
+
+
         if (value.key === "ArrowDown" || value.target.id === "nav-down") {
 
             // clockDrop = document.getElementById("clock");
@@ -411,8 +417,22 @@
     const mainCircle = document.getElementById("main-circle");
 
     addCirclesBtn.addEventListener("click", () => {
-        addCircleFunc(60, 535);
+        itemBoxCoords = addCircleFunc(60, 535);
+        console.log(itemBoxCoords);
         addCirclesBtn.style.display = "none"
+
+        // TODO: testing event loop:
+        setInterval(() => {
+            console.log("__+__");
+            // console.log(zoneChecker("dropper", itemBoxCoords));
+            let zone = zoneChecker("dropper", itemBoxCoords);
+            console.log("zone");
+            console.log(zone);
+            if (zone.active) {
+                // alert("BOOM!");
+                explode(zone.bombID, zone.bombLoc);
+            }
+        }, 250);
     });
 
     const dropBoxArr = [];
@@ -464,4 +484,165 @@
 
         };
         console.log(dropBoxArr);
+        return getItemBoxCoords();
+    };
+
+    function explode(bombID, bombLoc) {
+        console.log("bombLoc");
+        console.log(bombLoc);
+        let bombBox = document.getElementById(bombLoc);
+
+        // prevent adding twice:
+        if (!bombBox.classList.contains("kaboom")) {
+            bombBox.classList.add("kaboom");
+        };
+        setTimeout(function () {
+            bombBox.classList.remove("kaboom");
+            bombBox.classList.remove("invisible");
+            bombBox.removeChild(bombBox.childNodes[0]);
+            updateStats(user);
+        }, 500);
+
+    };
+
+    function getItemBoxCoords() {
+
+        // let itemBoxCoords = [];
+        let itemBoxArray = document.querySelectorAll(".item-box");
+        console.log("itemBoxArray");
+        console.log(itemBoxArray);
+
+        for (let i = 0; i < itemBoxArray.length; i++) {
+            // let dropArrItem = itemBoxArray[i].getBoundingClientRect();
+            let dropArrItem = {
+                id: itemBoxArray[i].id,
+                coords: itemBoxArray[i].getBoundingClientRect()
+            }
+            itemBoxCoords.push(dropArrItem);
+        };
+        return itemBoxCoords;
+    };
+
+    function checkBoxStatus(itemBoxID, hasClass) {
+        let boxToCheck = document.getElementById(itemBoxID);
+        if (boxToCheck.classList.contains(hasClass)) {
+            console.log("boxToCheck!");
+            console.log(boxToCheck);
+
+            return true;
+        } else {
+            return false;
+        };
+    };
+
+    function updatePlayerLocation() {
+        let dropper = document.getElementById(dropperID);
+    };
+
+    function zoneChecker(dropperID, itemBoxCoords) {
+        // TODO: export this function:
+        // async function coordChecker(dropperID) {
+        let dropper = document.getElementById(dropperID);
+        let dropperRect = dropper.getBoundingClientRect();
+
+        // let itemBoxArray = document.querySelectorAll(".item-box");
+        // console.log(itemBoxArray);
+
+        // let thisID = false;
+        // console.log("itemBoxCoords:");
+        // console.log(itemBoxCoords);
+        // let response = false;
+
+        for (let i = 0; i < itemBoxCoords.length; i++) {
+
+            let dropArrItem = itemBoxCoords[i];
+            let boxToCheck = document.getElementById(dropArrItem.id);
+            // console.log("boxToCheck");
+            // console.log(boxToCheck);
+            // console.log("dropArrItem.coords.left");
+            // console.log(dropArrItem.coords.left);
+            // console.log(parseInt(dropArrItem.coords.left));
+            // console.log("dropperRect.right");
+            // console.log(dropperRect.right);
+
+            if (parseInt(dropArrItem.coords.left) < Math.round(dropperRect.right) &&
+                parseInt(dropArrItem.coords.right) > Math.round(dropperRect.left) &&
+                parseInt(dropArrItem.coords.top) < Math.round(dropperRect.bottom) &&
+                parseInt(dropArrItem.coords.bottom) > Math.round(dropperRect.top)) {
+
+                if (boxToCheck.classList.contains("invisible")) {
+                    // console.log("boxToCheck!");
+                    // console.log(boxToCheck);
+                    // alert(boxToCheck);
+
+                    // console.log("node:");
+                    // console.log(boxToCheck.hasChildNodes[0]);
+                    // if (list.hasChildNodes()) {
+                    //     list.removeChild(list.childNodes[0]);
+                    // }
+
+                    return {
+                        active: true,
+                        bombID: "",
+                        bombLoc: boxToCheck.id
+                    };
+                } else {
+                    return {
+                        active: false,
+                        bombID: "",
+                        bombLoc: ""
+                    };;
+                };
+                // thisID = true;
+                // return thisID;
+                // console.log("status:");
+                // console.log(checkBoxStatus(dropArrItem.id, "active"));
+                // return checkBoxStatus(dropArrItem.id, "active");
+                // return true;
+            };
+        };
+        // return response;
+
+        // if (thisID != false) {
+        //     let boxToCheck = document.getElementById(thisID);
+        //     if (boxToCheck.classList.contains("active")) {
+        //         console.log("boxToCheck!");
+        //         console.log(boxToCheck);
+        //         return true;
+        //     } else {
+        //         return false;
+        //     };
+        // } else {
+        // return false;
+        // };
+        // };
+
+        //////////////////////////////////////////////////////
+        // console.log(coordChecker("dropper"));
+        // const boxToDrop = document.getElementById(await coordChecker(dropperID));
+
+        // if (boxToDrop.classList.contains("active")) {
+        //     console.log("BOOM!");
+        //     // socket.emit("addBombNow", {
+        //         // dropCount: dropCount,
+        //         // boxDropID: boxToDrop.id,
+        //         // bombClass: "glow",
+        //         // activeBomb: "inactive"
+        //         // boxToDrop.append(bomb);
+        //         // boxToDrop.classList.remove("empty");
+        //         // boxToDrop.classList.add("boom");
+
+        //         dropCount--;
+        //     };
+
+        // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
+        //////////////////////////////////////////////////////
+        // save location to respective spot on clock-map (for socket):
+
+    };
+
+    function updateStats(user) {
+        user.health = user.health - 10;
+        console.log("user.health");
+        console.log(user.health);
     };

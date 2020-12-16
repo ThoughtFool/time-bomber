@@ -28,11 +28,13 @@ io.on("connection", (socket) => {
     });
     
     socket.on("addBombNow", (data) => {
-        console.log("data");
-        console.log(data);
+        // console.log("data");
+        // console.log(data);
         socket.emit("addBombNow", data);
         data.bombClass = "invisible";
         data.activeBomb = "active";
+        // console.log("data-2");
+        // console.log(data);
         socket.broadcast.emit("addBombNow", data);
     });
 });
