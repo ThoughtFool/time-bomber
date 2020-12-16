@@ -37,6 +37,14 @@ io.on("connection", (socket) => {
         // console.log(data);
         socket.broadcast.emit("addBombNow", data);
     });
+
+    socket.on("explosion", (data) => {
+        socket.emit("explosion", data);
+
+        // send update to all users except initiator:
+        data.status = "remove";
+        socket.broadcast.emit("explosion", data);
+    });
 });
 
 server.listen(port, () => console.log(`Time Bomber app listening on port ${port}!`));

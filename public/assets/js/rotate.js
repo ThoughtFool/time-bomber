@@ -65,6 +65,10 @@
         spawnBomb(data.dropCount, data.boxDropID, data.bombClass, data.activeBomb);
     });
 
+    socket.on("explosion", (data) => {
+        explode(data.status, data.bombID, data.bombLoc);
+    });
+
     async function naviCtrl(value) {
 
 
@@ -430,7 +434,12 @@
             console.log(zone);
             if (zone.active) {
                 // alert("BOOM!");
-                explode(zone.bombID, zone.bombLoc);
+                socket.emit("explosion", {
+                    bombID: zone.bombID,
+                    bombLoc: zone.bombLoc,
+                    status: "detonate"
+                });
+                // explode(zone.bombID, zone.bombLoc);
             }
         }, 250);
     });
@@ -487,21 +496,37 @@
         return getItemBoxCoords();
     };
 
-    function explode(bombID, bombLoc) {
+    function explode(status, bombID, bombLoc) {
         console.log("bombLoc");
         console.log(bombLoc);
         let bombBox = document.getElementById(bombLoc);
 
-        // prevent adding twice:
-        if (!bombBox.classList.contains("kaboom")) {
-            bombBox.classList.add("kaboom");
+        if (status === "detonate") {
+            if (!bombBox.classList.contains("kaboom")) {
+                bombBox.classList.add("kaboom");
+            };
+            setTimeout(function () {
+                bombBox.classList.remove("kaboom");
+                // bombBox.classList.add(bombClass);
+                bombBox.classList.remove("invisible");
+                bombBox.removeChild(bombBox.childNodes[0]);
+                bombBox.classList.add("empty");
+                updateStats(user);
+            }, 500);
+            
+        } else if (status === "remove") {
+                bombBox.removeChild(bombBox.childNodes[0]);
+                // bombBox.classList.add(bombClass);
+                bombBox.classList.remove("glow");
+                bombBox.classList.remove("boom-box");
+                bombBox.classList.add("empty");
+                
+
+        } else {
+            alert("issue found");
         };
-        setTimeout(function () {
-            bombBox.classList.remove("kaboom");
-            bombBox.classList.remove("invisible");
-            bombBox.removeChild(bombBox.childNodes[0]);
-            updateStats(user);
-        }, 500);
+
+        // prevent adding twice:
 
     };
 
