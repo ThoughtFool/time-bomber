@@ -419,11 +419,15 @@
 
     const addCirclesBtn = document.getElementById("add-circles");
     const mainCircle = document.getElementById("main-circle");
+    const slideDeck = document.querySelector(".slide-deck");
 
     addCirclesBtn.addEventListener("click", () => {
         itemBoxCoords = addCircleFunc(60, 535);
         console.log(itemBoxCoords);
         addCirclesBtn.style.display = "none"
+        slideDeck.style.display = "block"
+
+        displayStats(user);
 
         // TODO: testing event loop:
         setInterval(() => {
@@ -504,17 +508,19 @@
         if (status === "detonate") {
             if (!bombBox.classList.contains("kaboom")) {
                 bombBox.classList.add("kaboom");
+                setTimeout(function () {
+                    bombBox.classList.remove("kaboom");
+                    bombBox.removeChild(bombBox.childNodes[0]);
+                    // bombBox.classList.add(bombClass);
+                    bombBox.classList.remove("invisible");
+                    bombBox.classList.add("empty");
+                    updateStats(user);
+                }, 500);
             };
-            setTimeout(function () {
-                bombBox.classList.remove("kaboom");
-                // bombBox.classList.add(bombClass);
-                bombBox.classList.remove("invisible");
-                bombBox.removeChild(bombBox.childNodes[0]);
-                bombBox.classList.add("empty");
-                updateStats(user);
-            }, 500);
             
         } else if (status === "remove") {
+                console.log("bombBox.childNodes[0]");
+                console.log(bombBox.childNodes[0]);
                 bombBox.removeChild(bombBox.childNodes[0]);
                 // bombBox.classList.add(bombClass);
                 bombBox.classList.remove("glow");
@@ -666,8 +672,17 @@
 
     };
 
+    function displayStats(user) {
+        let healthStat = document.getElementById("health-status");
+        healthStat.innerText = user.health;
+    };
+
     function updateStats(user) {
         user.health = user.health - 10;
-        console.log("user.health");
-        console.log(user.health);
+        displayStats(user);
+        if (user.health <= 0) {
+            alert("GAME OVER!");
+        };
     };
+
+    

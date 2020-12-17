@@ -393,3 +393,26 @@ body {
     border-radius: 50%;
     pointer-events: none;
 }
+
+.slide-deck {
+    width: 100%;
+    color: white;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    height: 50px;
+    display: none;
+    align-items: center;
+    justify-content: right;
+    padding: 5%;
+}
+
+.stats {
+    position: relative;
+    display: flex;
+    font-size: xx-large;
+}
+
+#health-status {
+    transition: 2s;
+}
