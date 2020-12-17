@@ -12,21 +12,24 @@
     var y;
 
     let itemBoxCoords = [];
+
     let user = {
         health: 100,
-        bombCount: 10
+        bombCount: 5
     };
 
-    // global test vars:
-    bodyRectLeft = 0;
-    containerRectLeft = 0;
-    bodyWidth = 0;
-    bodyHeight = 0;
-    containerWidth = 0;
-    bombWidth = 0;
+    let opponent = {
+        health: 100,
+        bombCount: 5
+    };
 
-
-
+    // // global test vars:
+    // bodyRectLeft = 0;
+    // containerRectLeft = 0;
+    // bodyWidth = 0;
+    // bodyHeight = 0;
+    // containerWidth = 0;
+    // bombWidth = 0;
 
     // // Your web app's Firebase configuration
     // const firebaseConfig = {
@@ -67,6 +70,10 @@
 
     socket.on("explosion", (data) => {
         explode(data.status, data.bombID, data.bombLoc);
+    });
+
+    socket.on("displayStats", (data) =>{
+        displayStats("toOpponent", data.user);
     });
 
     async function naviCtrl(value) {
@@ -419,15 +426,19 @@
 
     const addCirclesBtn = document.getElementById("add-circles");
     const mainCircle = document.getElementById("main-circle");
+    const infoBar = document.getElementById("info-bar");
+    const infoBarOpponent = document.getElementById("info-bar-opponent");
     const slideDeck = document.querySelector(".slide-deck");
 
     addCirclesBtn.addEventListener("click", () => {
         itemBoxCoords = addCircleFunc(60, 535);
         console.log(itemBoxCoords);
-        addCirclesBtn.style.display = "none"
-        slideDeck.style.display = "block"
+        addCirclesBtn.style.display = "none";
+        infoBar.style.display = "block";
+        infoBarOpponent.style.display = "block"
 
-        displayStats(user);
+        displayStats("toUser", user);
+        displayStats("toOpponent", user);
 
         // TODO: testing event loop:
         setInterval(() => {
@@ -672,17 +683,35 @@
 
     };
 
-    function displayStats(user) {
+    function displayStats(string, user) {
         let healthStat = document.getElementById("health-status");
-        healthStat.innerText = user.health;
+        let healthStatOpponent = document.getElementById("health-status-opponent");
+
+        if (string === "toUser") {
+            healthStat.innerText = user.health;
+
+        } else if (string === "toOpponent") {
+            healthStatOpponent.innerText = user.health;
+
+        } else {
+            console.log("something went wrong");
+        }
+
     };
 
     function updateStats(user) {
         user.health = user.health - 10;
-        displayStats(user);
-        if (user.health <= 0) {
+
+        // TODO: create funtion updateBombCount();
+
+        displayStats("toUser", user);
+        
+        socket.emit("displayStats", {
+            user: user
+        });
+
+        if (user.health <= 0 || opponent.health <= 0) {
+            // TODO: emit socket message:
             alert("GAME OVER!");
         };
     };
-
-    

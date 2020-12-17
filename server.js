@@ -45,6 +45,12 @@ io.on("connection", (socket) => {
         data.status = "remove";
         socket.broadcast.emit("explosion", data);
     });
+
+    socket.on("displayStats", (data) => {
+        socket.broadcast.emit("displayStats", data);
+    });
+
+    // function switchUserInfo ()
 });
 
 server.listen(port, () => console.log(`Time Bomber app listening on port ${port}!`));
