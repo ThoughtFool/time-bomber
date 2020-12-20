@@ -68,22 +68,28 @@
         console.log("randomly-deployed item");
 
         let randDrop = document.createElement("DIV");
-        randDrop.classList.add("randDrop", dropClass);
+        randDrop.classList.add("rand-drop", dropClass);
         // drop.classList.add("randDrop", "glow");
         randDrop.setAttribute("id", `randDrop-${dropCount}`);
 
         let boxToDrop = document.getElementById(boxDropID);
         boxToDrop.append(randDrop);
         boxToDrop.classList.add(dropClass);
+        boxToDrop.classList.add("random-drop");
 
         let second = 1000;
         setTimeout(() => {
-            function removeElement(id) {
-                var elem = document.getElementById(id);
-                return elem.parentNode.removeChild(elem);
-            };
-            boxToDrop.classList.remove(dropClass);
-            removeElement(randDrop.id);
+            let elem = boxToDrop.getElementsByClassName("rand-drop")[0];
+            if (elem != null) {
+                boxToDrop.removeChild(elem);
+                boxToDrop.classList.remove(dropClass);
+                boxToDrop.classList.remove("heart");
+                boxToDrop.classList.remove("ghost");
+                boxToDrop.classList.remove("glove");
+                boxToDrop.classList.remove("random-drop");
+            }
+
+            // removeElement(randDrop.id);
         }, 10 * second);
     };
 
@@ -95,6 +101,14 @@
         explode(data.status, data.bombID, data.bombLoc);
     });
 
+    socket.on("grabDrop", (data) => {
+        explode(data.status, data.dropID, data.dropLoc);
+
+        // status:
+        // "upgrade"
+        // "missed"
+    });
+
     socket.on("displayStats", (data) => {
         displayStats("toOpponent", data.user);
     });
@@ -104,7 +118,7 @@
         console.log("random drop data, returned from server");
         console.log(data);
 
-        spawnDrop(data.randID, data.randItem);
+        spawnDrop(data.randID, data.randItem, data.dropCount);
 
         setTimeout(async () => {
             await socket.emit("randomDrop", {
@@ -112,6 +126,8 @@
             });
         }, 10000);
     });
+
+
 
     async function naviCtrl(value) {
 
@@ -487,21 +503,26 @@
             let zone = zoneChecker("dropper", itemBoxCoords);
             console.log("zone");
             console.log(zone);
-            if (zone.active) {
-                // alert("BOOM!");
+            if (zone.active) { ///////////////////////////////////////////////////////////
                 socket.emit("explosion", {
                     bombID: zone.bombID,
                     bombLoc: zone.bombLoc,
                     status: "detonate"
                 });
-                // explode(zone.bombID, zone.bombLoc);
+            };
+
+            if (zone.drop) {
+                socket.emit("grabDrop", {
+                    dropID: zone.dropID,
+                    dropLoc: zone.dropLoc,
+                    status: "upgrade"
+                });
             }
         }, 250);
         ////////////////////////////////////////////////////////////////////
         // TODO: place on server:
         ////////////////////////////////////////////////////////////////////
         // share drop array ID with server random drop function:
-
         ////////////////////////////////////////////////////////////////////
     });
 
@@ -552,15 +573,7 @@
 
             newDropBox.style.margin = `${smallMargin}px`;
 
-
-            // console.log(rotation);
-
         };
-
-        // // share drop array ID with server random drop function:
-        // socket.emit("randomDrop", {
-        //     dropBoxArr: dropBoxArr
-        // });
 
         // TODO: getItemBoxCoords(dropBoxArr);
         return getItemBoxCoords();
@@ -575,42 +588,65 @@
             if (!bombBox.classList.contains("kaboom")) {
                 bombBox.classList.add("kaboom");
                 setTimeout(function () {
-                    bombBox.classList.remove("kaboom");
-                    bombBox.removeChild(bombBox.childNodes[0]);
+                    // bombBox.removeChild(bombBox.childNodes[0]);
                     // bombBox.classList.add(bombClass);
+                    let elem = bombBox.getElementsByClassName("bomb")[0];
+                    bombBox.removeChild(elem);
+                    bombBox.classList.remove("kaboom");
                     bombBox.classList.remove("invisible");
                     bombBox.classList.add("empty");
-                    updateStats(user);
+                    updateStats(user, "damage");
                 }, 500);
             };
 
         } else if (status === "remove") {
-            console.log("bombBox.childNodes[0]");
-            console.log(bombBox.childNodes[0]);
-            bombBox.removeChild(bombBox.childNodes[0]);
+            // console.log("bombBox.childNodes[0]");
+            // console.log(bombBox.childNodes[0]);
+            // bombBox.removeChild(bombBox.childNodes[0]);
             // bombBox.classList.add(bombClass);
-            bombBox.classList.remove("glow");
-            bombBox.classList.remove("boom-box");
-            bombBox.classList.add("empty");
 
+            let elem = bombBox.getElementsByClassName("bomb")[0];
+            if (typeof elem !== "object") {
+                console.log("elem");
+                console.log(typeof elem);
+
+            } else {
+                bombBox.removeChild(elem);
+                bombBox.classList.remove("glow");
+                bombBox.classList.remove("boom-box");
+                bombBox.classList.add("empty");
+            };
+
+        } else if (status === "upgrade") {
+            let elem = bombBox.getElementsByClassName("rand-drop")[0];
+            bombBox.removeChild(elem);
+            console.log(elem);
+            bombBox.classList.remove("heart");
+            bombBox.classList.remove("ghost");
+            bombBox.classList.remove("glove");
+            bombBox.classList.remove("random-drop");
+
+            updateStats(user, "heal");
+
+        } else if (status === "missed") {
+            let elem = bombBox.getElementsByClassName("rand-drop")[0];
+            bombBox.removeChild(elem);
+            bombBox.classList.remove("heart");
+            bombBox.classList.remove("ghost");
+            bombBox.classList.remove("glove");
+            bombBox.classList.remove("random-drop");
 
         } else {
             alert("issue found");
         };
-
-        // prevent adding twice:
-
     };
 
     function getItemBoxCoords() {
-
-        // let itemBoxCoords = [];
         let itemBoxArray = document.querySelectorAll(".item-box");
         console.log("itemBoxArray");
         console.log(itemBoxArray);
 
         for (let i = 0; i < itemBoxArray.length; i++) {
-            // let dropArrItem = itemBoxArray[i].getBoundingClientRect();
             let dropArrItem = {
                 id: itemBoxArray[i].id,
                 coords: itemBoxArray[i].getBoundingClientRect()
@@ -638,104 +674,50 @@
 
     function zoneChecker(dropperID, itemBoxCoords) {
         // TODO: export this function:
-        // async function coordChecker(dropperID) {
         let dropper = document.getElementById(dropperID);
         let dropperRect = dropper.getBoundingClientRect();
-
-        // let itemBoxArray = document.querySelectorAll(".item-box");
-        // console.log(itemBoxArray);
-
-        // let thisID = false;
-        // console.log("itemBoxCoords:");
-        // console.log(itemBoxCoords);
-        // let response = false;
 
         for (let i = 0; i < itemBoxCoords.length; i++) {
 
             let dropArrItem = itemBoxCoords[i];
             let boxToCheck = document.getElementById(dropArrItem.id);
-            // console.log("boxToCheck");
-            // console.log(boxToCheck);
-            // console.log("dropArrItem.coords.left");
-            // console.log(dropArrItem.coords.left);
-            // console.log(parseInt(dropArrItem.coords.left));
-            // console.log("dropperRect.right");
-            // console.log(dropperRect.right);
 
+
+            // collision detection:
             if (parseInt(dropArrItem.coords.left) < Math.round(dropperRect.right) &&
                 parseInt(dropArrItem.coords.right) > Math.round(dropperRect.left) &&
                 parseInt(dropArrItem.coords.top) < Math.round(dropperRect.bottom) &&
                 parseInt(dropArrItem.coords.bottom) > Math.round(dropperRect.top)) {
 
                 if (boxToCheck.classList.contains("invisible")) {
-                    // console.log("boxToCheck!");
-                    // console.log(boxToCheck);
-                    // alert(boxToCheck);
-
-                    // console.log("node:");
-                    // console.log(boxToCheck.hasChildNodes[0]);
-                    // if (list.hasChildNodes()) {
-                    //     list.removeChild(list.childNodes[0]);
-                    // }
 
                     return {
                         active: true,
                         bombID: "",
-                        bombLoc: boxToCheck.id
+                        bombLoc: boxToCheck.id,
+                        drop: false
+                    };
+
+                } else if (boxToCheck.classList.contains("random-drop")) {
+                    return {
+                        active: false,
+                        dropID: "",
+                        dropLoc: boxToCheck.id,
+                        drop: true
                     };
                 } else {
                     return {
                         active: false,
                         bombID: "",
-                        bombLoc: ""
-                    };;
+                        bombLoc: "",
+                        drop: false
+                    };
                 };
-                // thisID = true;
-                // return thisID;
-                // console.log("status:");
-                // console.log(checkBoxStatus(dropArrItem.id, "active"));
-                // return checkBoxStatus(dropArrItem.id, "active");
-                // return true;
+
+                // save location to respective spot on clock-map (for socket):
+
             };
         };
-        // return response;
-
-        // if (thisID != false) {
-        //     let boxToCheck = document.getElementById(thisID);
-        //     if (boxToCheck.classList.contains("active")) {
-        //         console.log("boxToCheck!");
-        //         console.log(boxToCheck);
-        //         return true;
-        //     } else {
-        //         return false;
-        //     };
-        // } else {
-        // return false;
-        // };
-        // };
-
-        //////////////////////////////////////////////////////
-        // console.log(coordChecker("dropper"));
-        // const boxToDrop = document.getElementById(await coordChecker(dropperID));
-
-        // if (boxToDrop.classList.contains("active")) {
-        //     console.log("BOOM!");
-        //     // socket.emit("addBombNow", {
-        //         // dropCount: dropCount,
-        //         // boxDropID: boxToDrop.id,
-        //         // bombClass: "glow",
-        //         // activeBomb: "inactive"
-        //         // boxToDrop.append(bomb);
-        //         // boxToDrop.classList.remove("empty");
-        //         // boxToDrop.classList.add("boom");
-
-        //         dropCount--;
-        //     };
-
-        // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
-        //////////////////////////////////////////////////////
-        // save location to respective spot on clock-map (for socket):
-
     };
 
     function displayStats(string, user) {
@@ -754,8 +736,20 @@
 
     };
 
-    function updateStats(user) {
-        user.health = user.health - 10;
+    function updateStats(user, action) {
+
+        if (action === "damage") {
+            user.health = user.health - 10;
+
+        } else if (action === "heal") {
+            
+            if (user.health < 100) {
+                user.health = user.health + 5;
+            };
+
+        } else {
+            console.log("no action selected");
+        };
 
         // TODO: create funtion updateBombCount();
 
@@ -769,4 +763,20 @@
             // TODO: emit socket message:
             alert("GAME OVER!");
         };
+    };
+
+    function removeDrop() {
+
+        // function removeElement(id) {
+        //     if (id != null) {
+        //         var elem = document.getElementById(id);
+        //         return elem.parentNode.removeChild(elem);
+        //     } else {
+        //         return;
+        //     };
+        // };
+        // boxToDrop.classList.remove(dropClass);
+        // boxToDrop.classList.remove("random-drop");
+
+        // removeElement(randDrop.id);
     };

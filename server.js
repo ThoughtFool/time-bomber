@@ -10,6 +10,8 @@ const port = process.env.PORT || 8081;
 
 const server = http.createServer(app);
 const io = socketIO(server);
+let dropCount = 0;
+let initNum = 0;
 
 app.use(express.static(__dirname + "/public"));
 app.get('/', (req, res) => {
@@ -53,48 +55,66 @@ io.on("connection", (socket) => {
     });
 
     socket.on("randomDrop", (data) => {
-        console.log("socket running");
-        // let itemBoxArray = ;
+
         let dropItemsArr = ["heart", "ghost", "glove"];
+        console.log("initNum");
+        console.log(initNum);
 
-        randomDrop(data);
+        if (initNum >= 1) {
 
-        function randomDrop(data) {
-            let randomDropBoxIndex = Math.floor(Math.random() * data.itemBoxCoords.length);
-            let randDropBoxID = data.itemBoxCoords[randomDropBoxIndex].id;
-            console.log("randDropBoxID");
-            console.log(randDropBoxID);
-            
-            let randomItemIndex = Math.floor(Math.random() * 2);
-            let randDropItem = dropItemsArr[randomItemIndex];
-            randomTime(randDropBoxID, randDropItem);
+            randomDrop(data);
 
-            // get array of bomb drops
-            // use randomized dice throw to determine how much time before next drop
-            // Math.random() decides which item to throw
-            // calls function to place items
+            function randomDrop(data) {
+                let randomDropBoxIndex = Math.floor(Math.random() * data.itemBoxCoords.length);
+                let randDropBoxID = data.itemBoxCoords[randomDropBoxIndex].id;
+                console.log("randDropBoxID");
+                console.log(randDropBoxID);
 
-            function randomTime(randDropBoxID, randDropItem) {
-                // boxDropID, dropClass, dropCount
-                console.log("Randomized Drops");
-                let milliseconds = 1000;
-                randomTimeout = Math.floor(Math.random() * 10) * milliseconds;
-                console.log("randomTimeout");
-                console.log(randomTimeout);
-                // randomDrop(randomItemIndex, dropItemArr, data);
+                let randomItemIndex = Math.floor(Math.random() * 2);
+                let randDropItem = dropItemsArr[randomItemIndex];
+                randomTime(randDropBoxID, randDropItem);
 
-                setTimeout(async () => {
-                    await socket.emit("randomDrop", {
-                        randID: randDropBoxID,
-                        randItem: randDropItem
-                    });
-                }, randomTimeout);
+                // get array of bomb drops
+                // use randomized dice throw to determine how much time before next drop
+                // Math.random() decides which item to throw
+                // calls function to place items
 
+                function randomTime(randDropBoxID, randDropItem) {
+                    // boxDropID, dropClass, dropCount
+                    console.log("Randomized Drops");
+                    let milliseconds = 1000;
+                    randomTimeout = Math.floor(Math.random() * 10) * milliseconds;
+                    console.log("randomTimeout");
+                    console.log(randomTimeout);
+                    // randomDrop(randomItemIndex, dropItemArr, data);
+
+                    setTimeout(async () => {
+                        if (dropCount < 1) {
+                            await io.emit("randomDrop", {
+                                randID: randDropBoxID,
+                                randItem: randDropItem,
+                                dropCount: dropCount
+                            });
+                        };
+                    }, randomTimeout);
+
+                };
             };
+            dropCount++;
         };
+        initNum++;
     });
 
     // function switchUserInfo ()
+
+    socket.on("grabDrop", (data) => {
+        socket.emit("grabDrop", data); //status = "upgrade"
+
+        // send update to all users except initiator:
+        data.status = "missed";
+        socket.broadcast.emit("grabDrop", data);
+        dropCount--
+    });
 });
 
 server.listen(port, () => console.log(`Time Bomber app listening on port ${port}!`));
