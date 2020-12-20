@@ -498,3 +498,36 @@ body {
     position: relative;
     transition: 2s;
 }
+
+.heart {
+    border-radius: 50%;
+    background-color: rgb(255, 0, 0);
+    height: 10px;
+    width: 10px;
+    top: 50%;
+    left: 50%;
+    margin: -5px 0px 0px -5px;
+    position: absolute;
+}
+
+.ghost {
+    border-radius: 50%;
+    background-color: rgb(0, 255, 34);
+    height: 10px;
+    width: 10px;
+    top: 50%;
+    left: 50%;
+    margin: -5px 0px 0px -5px;
+    position: absolute;
+}
+
+.glove {
+    border-radius: 50%;
+    background-color: rgba(0, 140, 255, 0.918);
+    height: 10px;
+    width: 10px;
+    top: 50%;
+    left: 50%;
+    margin: -5px 0px 0px -5px;
+    position: absolute;
+}

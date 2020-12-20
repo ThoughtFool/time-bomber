@@ -64,6 +64,29 @@
         boxToDrop.classList.add("boom-box");
     };
 
+    function spawnDrop(boxDropID, dropClass, dropCount) {
+        console.log("randomly-deployed item");
+
+        let randDrop = document.createElement("DIV");
+        randDrop.classList.add("randDrop", dropClass);
+        // drop.classList.add("randDrop", "glow");
+        randDrop.setAttribute("id", `randDrop-${dropCount}`);
+
+        let boxToDrop = document.getElementById(boxDropID);
+        boxToDrop.append(randDrop);
+        boxToDrop.classList.add(dropClass);
+
+        let second = 1000;
+        setTimeout(() => {
+            function removeElement(id) {
+                var elem = document.getElementById(id);
+                return elem.parentNode.removeChild(elem);
+            };
+            boxToDrop.classList.remove(dropClass);
+            removeElement(randDrop.id);
+        }, 10 * second);
+    };
+
     socket.on("addBombNow", (data) => {
         spawnBomb(data.dropCount, data.boxDropID, data.bombClass, data.activeBomb);
     });
@@ -72,8 +95,22 @@
         explode(data.status, data.bombID, data.bombLoc);
     });
 
-    socket.on("displayStats", (data) =>{
+    socket.on("displayStats", (data) => {
         displayStats("toOpponent", data.user);
+    });
+
+    socket.on("randomDrop", (data) => {
+        console.log("randomDropItem:");
+        console.log("random drop data, returned from server");
+        console.log(data);
+
+        spawnDrop(data.randID, data.randItem);
+
+        setTimeout(async () => {
+            await socket.emit("randomDrop", {
+                itemBoxCoords: itemBoxCoords
+            });
+        }, 10000);
     });
 
     async function naviCtrl(value) {
@@ -440,9 +477,12 @@
         displayStats("toUser", user);
         displayStats("toOpponent", user);
 
+        socket.emit("randomDrop", {
+            itemBoxCoords: itemBoxCoords
+        });
+
         // TODO: testing event loop:
         setInterval(() => {
-            console.log("__+__");
             // console.log(zoneChecker("dropper", itemBoxCoords));
             let zone = zoneChecker("dropper", itemBoxCoords);
             console.log("zone");
@@ -457,14 +497,21 @@
                 // explode(zone.bombID, zone.bombLoc);
             }
         }, 250);
+        ////////////////////////////////////////////////////////////////////
+        // TODO: place on server:
+        ////////////////////////////////////////////////////////////////////
+        // share drop array ID with server random drop function:
+
+        ////////////////////////////////////////////////////////////////////
     });
 
-    const dropBoxArr = [];
     let fragment;
 
     function addCircleFunc(numCircle, bigCircleSize) {
         let smallCircleSize = Math.round(bigCircleSize * Math.PI / numCircle);
         let rotation = 0;
+        const dropBoxArr = [];
+        // let dropBoxIDArr = [];
         for (let i = 0; i < numCircle; i++) {
             let dropBoxID = `drop-box-${i}`;
             let newCircle = document.createElement("div");
@@ -481,6 +528,7 @@
             // console.log(newDropBox.style.height);
 
             dropBoxArr.push(newDropBox);
+            // dropBoxIDArr.push(dropBoxID);
 
             let angle = 360 / numCircle;
 
@@ -504,10 +552,17 @@
 
             newDropBox.style.margin = `${smallMargin}px`;
 
+
             // console.log(rotation);
 
         };
-        console.log(dropBoxArr);
+
+        // // share drop array ID with server random drop function:
+        // socket.emit("randomDrop", {
+        //     dropBoxArr: dropBoxArr
+        // });
+
+        // TODO: getItemBoxCoords(dropBoxArr);
         return getItemBoxCoords();
     };
 
@@ -528,16 +583,16 @@
                     updateStats(user);
                 }, 500);
             };
-            
+
         } else if (status === "remove") {
-                console.log("bombBox.childNodes[0]");
-                console.log(bombBox.childNodes[0]);
-                bombBox.removeChild(bombBox.childNodes[0]);
-                // bombBox.classList.add(bombClass);
-                bombBox.classList.remove("glow");
-                bombBox.classList.remove("boom-box");
-                bombBox.classList.add("empty");
-                
+            console.log("bombBox.childNodes[0]");
+            console.log(bombBox.childNodes[0]);
+            bombBox.removeChild(bombBox.childNodes[0]);
+            // bombBox.classList.add(bombClass);
+            bombBox.classList.remove("glow");
+            bombBox.classList.remove("boom-box");
+            bombBox.classList.add("empty");
+
 
         } else {
             alert("issue found");
@@ -705,7 +760,7 @@
         // TODO: create funtion updateBombCount();
 
         displayStats("toUser", user);
-        
+
         socket.emit("displayStats", {
             user: user
         });
