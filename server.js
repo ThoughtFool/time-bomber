@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
                     // boxDropID, dropClass, dropCount
                     console.log("Randomized Drops");
                     let milliseconds = 1000;
-                    randomTimeout = Math.floor(Math.random() * 10) * milliseconds;
+                    randomTimeout = Math.floor(Math.random() * 10 + 5) * milliseconds;
                     console.log("randomTimeout");
                     console.log(randomTimeout);
                     // randomDrop(randomItemIndex, dropItemArr, data);

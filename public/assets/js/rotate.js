@@ -96,17 +96,6 @@
                     status: "missed"
                 });
 
-                // let elem = boxToDrop.getElementsByClassName("rand-drop")[0];
-
-                // if (elem != null) {
-                //     boxToDrop.removeChild(elem);
-                //     boxToDrop.classList.remove(dropClass);
-                //     boxToDrop.classList.remove("heart");
-                //     boxToDrop.classList.remove("ghost");
-                //     boxToDrop.classList.remove("glove");
-                //     boxToDrop.classList.remove("random-drop");
-                // };
-
             }, 10 * second);
         };
     };
@@ -521,8 +510,8 @@
 
         // TODO: testing event loop:
         setInterval(() => {
-            // console.log(zoneChecker("dropper", itemBoxCoords));
             let zone = zoneChecker("dropper", itemBoxCoords);
+            // console.log(zoneChecker("dropper", itemBoxCoords));
             console.log("zone");
             console.log(zone);
             if (zone.active) { ///////////////////////////////////////////////////////////
