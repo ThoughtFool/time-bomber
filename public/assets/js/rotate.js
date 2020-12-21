@@ -55,7 +55,7 @@
     // const database = firebase.database();
 
     // database.ref().on("change", function (snap) {
-    //     console.log(snap);
+    //     
     // });
 
     function spawnBomb(dropCount, boxDropID, bombClass, activeBomb) {
@@ -73,9 +73,6 @@
     };
 
     function spawnDrop(boxDropID, dropClass, dropCount) {
-        console.log("randomly-deployed item");
-
-        if (dropCount <= 1) {
 
             let randDrop = document.createElement("DIV");
             randDrop.classList.add("rand-drop", dropClass);
@@ -93,11 +90,12 @@
                 socket.emit("grabDrop", {
                     dropID: "",
                     dropLoc: boxDropID,
-                    status: "missed"
+                    status: "missed",
+                    dropCount: dropCount
                 });
 
             }, 10 * second);
-        };
+        // };
     };
 
     socket.on("addBombNow", (data) => {
@@ -110,9 +108,11 @@
     });
 
     socket.on("grabDrop", (data) => {
-        // data.dropCount;
-        explode(data.status, data.dropID, data.dropLoc);
+        dropCount = data.dropCount;
 
+        // if (data.dropCount > 0) {
+            explode(data.status, data.dropID, data.dropLoc);
+        // };
         // status:
         // "upgrade"
         // "missed"
@@ -123,13 +123,18 @@
     });
 
     socket.on("randomDrop", (data) => {
-        dropCount = data.dropCount;
-        console.log("randomDropItem:");
+        // dropCount = data.dropCount;
+        
         console.log("random drop data, returned from server");
         console.log(data);
+            data.dropCount++;
+            dropCount = data.dropCount;
 
-        spawnDrop(data.randID, data.randItem, data.dropCount);
-        // dropCount++;
+        // if (dropCount <= 1) {
+            // data.dropCount = dropCount;
+            spawnDrop(data.randID, data.randItem, data.dropCount);
+        // };
+
 
         // setTimeout(async () => {
         //     if (dropCount < 1) {
@@ -149,14 +154,6 @@
             // bomb = this.createElement("DIV");
             // bomb.classList.add("bomb");
             // bomb.setAttribute("id", `bomb-${dropCount}`);
-
-            console.log("bodyPos");
-            console.log(bodyPos);
-            console.log("bodyPos.width");
-            console.log(bodyPos.width);
-            console.log("bodyPos.height");
-            console.log(bodyPos.height);
-
             // container.append(bomb);
             //////////////////////////////////////////////////////
             // create cartesian coord function to check if (x, y) are inside of boxDrop array
@@ -168,14 +165,8 @@
                 let dropper = document.getElementById(dropperID);
                 let dropperRect = dropper.getBoundingClientRect();
                 let itemBoxArray = document.querySelectorAll(".item-box");
-                // console.log(itemBoxArray);
                 for (let i = 0; i < itemBoxArray.length; i++) {
                     let dropArrItem = itemBoxArray[i].getBoundingClientRect();
-                    console.log("dropArrItem");
-                    console.log(dropArrItem);
-
-                    console.log("dropperRect");
-                    console.log(dropperRect);
 
                     if (dropArrItem.left < dropperRect.right &&
                         dropArrItem.right > dropperRect.left &&
@@ -187,12 +178,12 @@
             };
 
             //////////////////////////////////////////////////////
-            console.log(coordChecker("dropper"));
+            // console.log(coordChecker("dropper"));
             const boxToDrop = document.getElementById(await coordChecker("dropper"));
 
             if (boxToDrop.classList.contains("empty")) {
                 socket.emit("addBombNow", {
-                    bombDropCount: dropCount,
+                    bombDropCount: bombDropCount,
                     boxDropID: boxToDrop.id,
                     bombClass: "glow",
                     activeBomb: "inactive"
@@ -201,23 +192,11 @@
                     // boxToDrop.classList.add("boom");
 
                 });
-
                 // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
                 //////////////////////////////////////////////////////
                 // save location to respective spot on clock-map (for socket):
                 // function mapDrop(dropLocID) {
-                //     dropLocID
-                // };
-
-                // newBomb = document.getElementById(`bomb-${dropCount}`);
-
-                // console.log(`x = ${x}`);
-
-                // newBomb.style.left = (x) + "px";
-                // newBomb.style.top = (y) + "px";
-
-                // newBomb.classList.add("glow");
-                // bombWidth = newBomb.getBoundingClientRect().width;
+                
                 bombDropCount++;
             };
 
@@ -256,30 +235,23 @@
             bomb.classList.add("bomb");
             clockDrop.append(bomb);
         } else if (value.key === "j" || value.key === "J") {
-            console.log("Space key selected!");
             clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
             bomb.classList.add("bomb");
             clockDrop.append(bomb);
         } else if (value.key === "k" || value.key === "K") {
-            console.log("Space key selected!");
             clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
             bomb.classList.add("bomb");
             clockDrop.append(bomb);
         } else if (value.key === "l" || value.key === "L") {
-            console.log("Space key selected!");
             clockDrop = document.getElementById("clock");
             bomb = this.createElement("DIV");
             bomb.classList.add("bomb");
             clockDrop.append(bomb);
         };
     };
-    //     alert(value);
-    //     console.log(value);
-    // }
 
-    // document.querySelector(".quarter1").ontouchstart = touchNav;
     document.addEventListener("touchstart", naviCtrl, false);
 
     document.addEventListener("keydown", naviCtrl, false);
@@ -352,11 +324,11 @@
     };
 
     bodyWidth = document.body.getBoundingClientRect().width;
-    console.log("bodyWidth");
-    console.log(bodyWidth);
+    
+    
     bodyRectLeft = document.body.getBoundingClientRect().left;
-    console.log("bodyRectLeft");
-    console.log(bodyRectLeft);
+    
+    
 
     containerTest = container.getBoundingClientRect();
     ////////////////////////////////////////////////////////////////////////
@@ -367,30 +339,30 @@
     container_Y = container.getBoundingClientRect().top;
 
     containerOffset_LEFT = container.offsetLeft;
-    console.log("container.offsetLeft");
-    console.log(container.offsetLeft);
+    
+    
     ////////////////////////////////////////////////////////////////////////
 
     myResizeFunc = function () {
 
         let newBodyWidth = document.body.getBoundingClientRect().width;
-        console.log("newBodyWidth");
-        console.log(newBodyWidth);
+        
+        
 
         newContainerTestWidth = container.getBoundingClientRect().width;
 
         let droppedBombs = document.getElementsByClassName("bomb");
         for (let i = 0; i < droppedBombs.length - 1; i++) {
             moveBomb = document.getElementById(`bomb-${i}`);
-            console.log(droppedBombs[i]);
-            console.log(moveBomb);
+            
+            
 
-            console.log("moveBomb.offsetLeft");
-            console.log(moveBomb.offsetLeft);
+            
+            
 
             new_containerOffset_LEFT = container.offsetLeft;
-            console.log("new_containerOffset_LEFT");
-            console.log(new_containerOffset_LEFT);
+            
+            
 
             let bomb_X = moveBomb.getBoundingClientRect().left;
             let bomb_Y = moveBomb.getBoundingClientRect().top;
@@ -406,29 +378,29 @@
             ////////////////////////////////////////////////////////////////////////
             // percentBigger_X = container_X / bomb_X;
             percentBigger_X = containerOffset_LEFT / bomb_X;
-            console.log("percentBigger_X");
-            console.log(percentBigger_X);
+            
+            
 
             percentBigger_Y = container_Y / bomb_Y;
-            console.log("percentBigger_Y");
-            console.log(percentBigger_Y);
+            
+            
             ////////////////////////////////////////////////////////////////////////
             // offset_X = bomb_X - container_X;
             offset_X = bomb_X - containerOffset_LEFT;
-            console.log("offset_X");
-            console.log(offset_X);
+            
+            
 
             offset_Y = bomb_X - container_Y;
-            console.log("offset_Y");
-            console.log(offset_Y);
+            
+            
             ////////////////////////////////////////////////////////////////////////
             newPos_X = new_containerOffset_LEFT / percentBigger_X;
             // newPos_X = new_container_X / percentBigger_X;
-            console.log("newPos_X");
-            console.log(newPos_X);
+            
+            
             newPos_Y = new_container_Y / percentBigger_Y;
-            console.log("newPos_Y");
-            console.log(newPos_Y);
+            
+            
             ////////////////////////////////////////////////////////////////////////
             moveBomb.style.left = (newPos_X) + "px";
             moveBomb.style.top = (newPos_Y) + "px";
@@ -438,55 +410,51 @@
 
     btnClick = function () {
         bodyWidth = document.body.getBoundingClientRect().width;
-        console.log("bodyWidth");
-        console.log(bodyWidth);
+        
+        
         containerWidth = container.getBoundingClientRect().width;
-        console.log("containerWidth");
-        console.log(containerWidth);
+        
+        
 
         bodyHeight = document.body.getBoundingClientRect().height;
-        console.log("bodyHeight");
-        console.log(bodyHeight);
+        
+        
         containerHeight = container.getBoundingClientRect().height;
-        console.log("containerHeight");
-        console.log(containerHeight);
+        
+        
 
         bodyRectLeft = document.body.getBoundingClientRect().left;
-        console.log("bodyRectLeft");
-        console.log(bodyRectLeft);
+        
+        
         containerRectLeft = container.getBoundingClientRect().left;
-        console.log("containerRectLeft");
-        console.log(containerRectLeft);
+        
+        
     };
 
     findOffsetLeft = function (bodyWidth, bombWidth, newbodyWidth, bodyRectLeft) {
 
         let emptyWidth = bodyWidth - bombWidth;
-        console.log("emptyWidth");
-        console.log(emptyWidth);
+        
+        
 
         let percentTotal_Empty = emptyWidth / bodyWidth;
-        console.log("percentTotal_Empty");
-        console.log(percentTotal_Empty);
+        
+        
 
         let percentEach_Empty = percentTotal_Empty / 2;
-        console.log("percentEach_Empty");
-        console.log(percentEach_Empty);
+        
+        
 
         let newEmptySpaceWidth = percentEach_Empty * newbodyWidth;
-        console.log("newEmptySpaceWidth");
-        console.log(newEmptySpaceWidth);
+        
+        
 
         let newBombRectLeft = newEmptySpaceWidth + bodyRectLeft;
-        console.log("newBombRectLeft");
-        console.log(newBombRectLeft);
 
         return newBombRectLeft;
     };
 
     // window.addEventListener("resize", myResizeFunc);
-    console.log("findOffsetWidth result:");
-
     const addCirclesBtn = document.getElementById("add-circles");
     const mainCircle = document.getElementById("main-circle");
     const infoBar = document.getElementById("info-bar");
@@ -495,7 +463,6 @@
 
     addCirclesBtn.addEventListener("click", () => {
         itemBoxCoords = addCircleFunc(60, 535);
-        console.log(itemBoxCoords);
         addCirclesBtn.style.display = "none";
         infoBar.style.display = "block";
         infoBarOpponent.style.display = "block"
@@ -511,9 +478,10 @@
         // TODO: testing event loop:
         setInterval(() => {
             let zone = zoneChecker("dropper", itemBoxCoords);
-            // console.log(zoneChecker("dropper", itemBoxCoords));
+
             console.log("zone");
             console.log(zone);
+            
             if (zone.active) { ///////////////////////////////////////////////////////////
                 socket.emit("explosion", {
                     bombID: zone.bombID,
@@ -557,7 +525,6 @@
             newDropBox.style.position = "absolute";
             newDropBox.style.height = `${smallCircleSize}px`;
             newDropBox.style.width = `${smallCircleSize}px`;
-            // console.log(newDropBox.style.height);
 
             dropBoxArr.push(newDropBox);
             // dropBoxIDArr.push(dropBoxID);
@@ -591,8 +558,8 @@
     };
 
     function explode(status, bombID, bombLoc) {
-        console.log("bombLoc");
-        console.log(bombLoc);
+        
+        
         let bombBox = document.getElementById(bombLoc);
 
         if (status === "detonate") {
@@ -611,15 +578,9 @@
             };
 
         } else if (status === "remove") {
-            // console.log("bombBox.childNodes[0]");
-            // console.log(bombBox.childNodes[0]);
-            // bombBox.removeChild(bombBox.childNodes[0]);
-            // bombBox.classList.add(bombClass);
 
             let elem = bombBox.getElementsByClassName("bomb")[0];
             if (typeof elem !== "object") {
-                console.log("elem");
-                console.log(typeof elem);
 
             } else {
                 bombBox.removeChild(elem);
@@ -631,7 +592,7 @@
         } else if (status === "upgrade") {
             let elem = bombBox.getElementsByClassName("rand-drop")[0];
             bombBox.removeChild(elem);
-            console.log(elem);
+            
             bombBox.classList.remove("heart");
             bombBox.classList.remove("ghost");
             bombBox.classList.remove("glove");
@@ -640,39 +601,39 @@
             updateStats(user, "heal");
 
         } else if (status === "missed") {
-
-            console.log("bombLoc");
-            console.log(bombLoc);
+            
             let elem = bombBox.getElementsByClassName("rand-drop")[0];
             if (typeof elem !== "object") {
-                console.log("elem");
-                console.log(typeof elem);
-
+                
             } else {
+                dropCount--;
+                console.log(dropCount);
+
                 bombBox.removeChild(elem);
                 bombBox.classList.remove("heart");
                 bombBox.classList.remove("ghost");
                 bombBox.classList.remove("glove");
                 bombBox.classList.remove("random-drop");
 
-                socket.emit("randomDrop", {
-                    itemBoxCoords: itemBoxCoords,
-                    dropCount: dropCount,
-                    deployed: false,
-                    missed: true
-                });
+                // if (dropCount <= 1) {
+                    socket.emit("randomDrop", {
+                        itemBoxCoords: itemBoxCoords,
+                        dropCount: dropCount,
+                        deployed: false,
+                        missed: true
+                    });
+                // };
             };
 
         } else if (status === "lost") {
 
-            console.log("bombLoc");
-            console.log(bombLoc);
             let elem = bombBox.getElementsByClassName("rand-drop")[0];
             if (typeof elem !== "object") {
-                console.log("elem");
-                console.log(typeof elem);
 
             } else {
+                // dropCount--;
+                // console.log(dropCount);
+
                 bombBox.removeChild(elem);
                 bombBox.classList.remove("heart");
                 bombBox.classList.remove("ghost");
@@ -694,8 +655,8 @@
 
     function getItemBoxCoords() {
         let itemBoxArray = document.querySelectorAll(".item-box");
-        console.log("itemBoxArray");
-        console.log(itemBoxArray);
+        
+        
 
         for (let i = 0; i < itemBoxArray.length; i++) {
             let dropArrItem = {
@@ -710,8 +671,8 @@
     function checkBoxStatus(itemBoxID, hasClass) {
         let boxToCheck = document.getElementById(itemBoxID);
         if (boxToCheck.classList.contains(hasClass)) {
-            console.log("boxToCheck!");
-            console.log(boxToCheck);
+            
+            
 
             return true;
         } else {
@@ -741,7 +702,6 @@
                 parseInt(dropArrItem.coords.bottom) > Math.round(dropperRect.top)) {
 
                 if (boxToCheck.classList.contains("invisible")) {
-
                     return {
                         active: true,
                         bombID: "",
@@ -782,7 +742,7 @@
             healthStatOpponent.innerText = user.health;
 
         } else {
-            console.log("something went wrong");
+            
         }
 
     };
@@ -799,7 +759,7 @@
             };
 
         } else {
-            console.log("no action selected");
+            
         };
 
         // TODO: create funtion updateBombCount();

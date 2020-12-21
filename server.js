@@ -58,16 +58,21 @@ io.on("connection", (socket) => {
 
         let dropItemsArr = ["heart", "ghost", "glove"];
         // dropCount = data.dropCount;
-        
+
         console.log("initNum");
         console.log(initNum);
         console.log("dropCount");
         console.log(dropCount);
 
-        if (initNum >= 1 && data.dropCount <= 1) {
-        // if (initNum >= 1 && data.missed >= 1) {
-
+        if (initNum >= 1 && initNum % 2 !== 0) {
             randomDrop(data);
+
+        } else if (data.missed === false) {
+            randomDrop(data);
+
+        } else {
+            console.log(data);
+        };
 
             function randomDrop(data) {
                 let randomDropBoxIndex = Math.floor(Math.random() * data.itemBoxCoords.length);
@@ -93,44 +98,44 @@ io.on("connection", (socket) => {
                     console.log(randomTimeout);
                     // randomDrop(randomItemIndex, dropItemArr, data);
 
-                    dropCount++;
-                    setTimeout(async () => {
-                        if (dropCount <= 1) {
+                    // if (dropCount <= 1) {
+                    //     dropCount++;
+                        setTimeout(async () => {
                             await io.emit("randomDrop", {
                                 randID: randDropBoxID,
                                 randItem: randDropItem,
                                 dropCount: dropCount
                             });
-                        };
-                    }, randomTimeout);
+                            
+                        }, randomTimeout);
+                    // };
                 };
             };
-        };
+        // };
         initNum++;
     });
 
     // function switchUserInfo ()
 
     socket.on("grabDrop", (data) => {
-        
-        if (dropCount > 0) {
-            dropCount--;
-            data.dropCount = dropCount;
-            console.log("after");
-            console.log(data.dropCount);
-        };
+
+        // if (dropCount > 0 && dropCount < 2) {
+        //     dropCount--;
+        //     data.dropCount = dropCount;
+        //     console.log("after");
+        //     console.log(data.dropCount);
+        // };
 
         if (data.status === "missed") {
             io.emit("grabDrop", data);
-            
+
         } else {
             socket.emit("grabDrop", data); //status = "upgrade"
-    
+
             // send update to all users except initiator:
             data.status = "lost";
             socket.broadcast.emit("grabDrop", data);
         };
-
     });
 });
 
