@@ -7,7 +7,8 @@
     var loopRight;
     var loopLeft;
     var degrees = 0;
-    var dropCount = 0;
+    let dropCount = 0;
+    let bombDropCount = 0;
     var x;
     var y;
 
@@ -21,6 +22,13 @@
     let opponent = {
         health: 100,
         bombCount: 5
+    };
+
+    let zone = {
+        active: false,
+        bombID: "",
+        bombLoc: "",
+        drop: false
     };
 
     // // global test vars:
@@ -67,30 +75,40 @@
     function spawnDrop(boxDropID, dropClass, dropCount) {
         console.log("randomly-deployed item");
 
-        let randDrop = document.createElement("DIV");
-        randDrop.classList.add("rand-drop", dropClass);
-        // drop.classList.add("randDrop", "glow");
-        randDrop.setAttribute("id", `randDrop-${dropCount}`);
+        if (dropCount <= 1) {
 
-        let boxToDrop = document.getElementById(boxDropID);
-        boxToDrop.append(randDrop);
-        boxToDrop.classList.add(dropClass);
-        boxToDrop.classList.add("random-drop");
+            let randDrop = document.createElement("DIV");
+            randDrop.classList.add("rand-drop", dropClass);
+            // drop.classList.add("randDrop", "glow");
+            randDrop.setAttribute("id", `randDrop-${dropCount}`);
 
-        let second = 1000;
-        setTimeout(() => {
-            let elem = boxToDrop.getElementsByClassName("rand-drop")[0];
-            if (elem != null) {
-                boxToDrop.removeChild(elem);
-                boxToDrop.classList.remove(dropClass);
-                boxToDrop.classList.remove("heart");
-                boxToDrop.classList.remove("ghost");
-                boxToDrop.classList.remove("glove");
-                boxToDrop.classList.remove("random-drop");
-            }
+            let boxToDrop = document.getElementById(boxDropID);
+            boxToDrop.append(randDrop);
+            boxToDrop.classList.add(dropClass);
+            boxToDrop.classList.add("random-drop");
 
-            // removeElement(randDrop.id);
-        }, 10 * second);
+            let second = 1000;
+            setTimeout(() => {
+
+                socket.emit("grabDrop", {
+                    dropID: "",
+                    dropLoc: boxDropID,
+                    status: "missed"
+                });
+
+                // let elem = boxToDrop.getElementsByClassName("rand-drop")[0];
+
+                // if (elem != null) {
+                //     boxToDrop.removeChild(elem);
+                //     boxToDrop.classList.remove(dropClass);
+                //     boxToDrop.classList.remove("heart");
+                //     boxToDrop.classList.remove("ghost");
+                //     boxToDrop.classList.remove("glove");
+                //     boxToDrop.classList.remove("random-drop");
+                // };
+
+            }, 10 * second);
+        };
     };
 
     socket.on("addBombNow", (data) => {
@@ -99,9 +117,11 @@
 
     socket.on("explosion", (data) => {
         explode(data.status, data.bombID, data.bombLoc);
+
     });
 
     socket.on("grabDrop", (data) => {
+        // data.dropCount;
         explode(data.status, data.dropID, data.dropLoc);
 
         // status:
@@ -114,24 +134,25 @@
     });
 
     socket.on("randomDrop", (data) => {
+        dropCount = data.dropCount;
         console.log("randomDropItem:");
         console.log("random drop data, returned from server");
         console.log(data);
 
         spawnDrop(data.randID, data.randItem, data.dropCount);
+        // dropCount++;
 
-        setTimeout(async () => {
-            await socket.emit("randomDrop", {
-                itemBoxCoords: itemBoxCoords
-            });
-        }, 10000);
+        // setTimeout(async () => {
+        //     if (dropCount < 1) {
+        //         await socket.emit("randomDrop", {
+        //             itemBoxCoords: itemBoxCoords,
+        //             dropCount: dropCount
+        //         });
+        //     };
+        // }, 10000);
     });
 
-
-
     async function naviCtrl(value) {
-
-
 
         if (value.key === "ArrowDown" || value.target.id === "nav-down") {
 
@@ -182,7 +203,7 @@
 
             if (boxToDrop.classList.contains("empty")) {
                 socket.emit("addBombNow", {
-                    dropCount: dropCount,
+                    bombDropCount: dropCount,
                     boxDropID: boxToDrop.id,
                     bombClass: "glow",
                     activeBomb: "inactive"
@@ -208,7 +229,7 @@
 
                 // newBomb.classList.add("glow");
                 // bombWidth = newBomb.getBoundingClientRect().width;
-                dropCount++;
+                bombDropCount++;
             };
 
         } else if (value.key === "ArrowUp" || value.target.id === "nav-up") {
@@ -494,7 +515,8 @@
         displayStats("toOpponent", user);
 
         socket.emit("randomDrop", {
-            itemBoxCoords: itemBoxCoords
+            itemBoxCoords: itemBoxCoords,
+            dropCount: dropCount
         });
 
         // TODO: testing event loop:
@@ -629,12 +651,52 @@
             updateStats(user, "heal");
 
         } else if (status === "missed") {
+
+            console.log("bombLoc");
+            console.log(bombLoc);
             let elem = bombBox.getElementsByClassName("rand-drop")[0];
-            bombBox.removeChild(elem);
-            bombBox.classList.remove("heart");
-            bombBox.classList.remove("ghost");
-            bombBox.classList.remove("glove");
-            bombBox.classList.remove("random-drop");
+            if (typeof elem !== "object") {
+                console.log("elem");
+                console.log(typeof elem);
+
+            } else {
+                bombBox.removeChild(elem);
+                bombBox.classList.remove("heart");
+                bombBox.classList.remove("ghost");
+                bombBox.classList.remove("glove");
+                bombBox.classList.remove("random-drop");
+
+                socket.emit("randomDrop", {
+                    itemBoxCoords: itemBoxCoords,
+                    dropCount: dropCount,
+                    deployed: false,
+                    missed: true
+                });
+            };
+
+        } else if (status === "lost") {
+
+            console.log("bombLoc");
+            console.log(bombLoc);
+            let elem = bombBox.getElementsByClassName("rand-drop")[0];
+            if (typeof elem !== "object") {
+                console.log("elem");
+                console.log(typeof elem);
+
+            } else {
+                bombBox.removeChild(elem);
+                bombBox.classList.remove("heart");
+                bombBox.classList.remove("ghost");
+                bombBox.classList.remove("glove");
+                bombBox.classList.remove("random-drop");
+
+                socket.emit("randomDrop", {
+                    itemBoxCoords: itemBoxCoords,
+                    dropCount: dropCount,
+                    deployed: false,
+                    missed: false
+                });
+            };
 
         } else {
             alert("issue found");
@@ -742,7 +804,7 @@
             user.health = user.health - 10;
 
         } else if (action === "heal") {
-            
+
             if (user.health < 100) {
                 user.health = user.health + 5;
             };
@@ -763,20 +825,4 @@
             // TODO: emit socket message:
             alert("GAME OVER!");
         };
-    };
-
-    function removeDrop() {
-
-        // function removeElement(id) {
-        //     if (id != null) {
-        //         var elem = document.getElementById(id);
-        //         return elem.parentNode.removeChild(elem);
-        //     } else {
-        //         return;
-        //     };
-        // };
-        // boxToDrop.classList.remove(dropClass);
-        // boxToDrop.classList.remove("random-drop");
-
-        // removeElement(randDrop.id);
     };

@@ -57,10 +57,15 @@ io.on("connection", (socket) => {
     socket.on("randomDrop", (data) => {
 
         let dropItemsArr = ["heart", "ghost", "glove"];
+        // dropCount = data.dropCount;
+        
         console.log("initNum");
         console.log(initNum);
+        console.log("dropCount");
+        console.log(dropCount);
 
-        if (initNum >= 1) {
+        if (initNum >= 1 && data.dropCount <= 1) {
+        // if (initNum >= 1 && data.missed >= 1) {
 
             randomDrop(data);
 
@@ -88,8 +93,9 @@ io.on("connection", (socket) => {
                     console.log(randomTimeout);
                     // randomDrop(randomItemIndex, dropItemArr, data);
 
+                    dropCount++;
                     setTimeout(async () => {
-                        if (dropCount < 1) {
+                        if (dropCount <= 1) {
                             await io.emit("randomDrop", {
                                 randID: randDropBoxID,
                                 randItem: randDropItem,
@@ -97,10 +103,8 @@ io.on("connection", (socket) => {
                             });
                         };
                     }, randomTimeout);
-
                 };
             };
-            dropCount++;
         };
         initNum++;
     });
@@ -108,12 +112,25 @@ io.on("connection", (socket) => {
     // function switchUserInfo ()
 
     socket.on("grabDrop", (data) => {
-        socket.emit("grabDrop", data); //status = "upgrade"
+        
+        if (dropCount > 0) {
+            dropCount--;
+            data.dropCount = dropCount;
+            console.log("after");
+            console.log(data.dropCount);
+        };
 
-        // send update to all users except initiator:
-        data.status = "missed";
-        socket.broadcast.emit("grabDrop", data);
-        dropCount--
+        if (data.status === "missed") {
+            io.emit("grabDrop", data);
+            
+        } else {
+            socket.emit("grabDrop", data); //status = "upgrade"
+    
+            // send update to all users except initiator:
+            data.status = "lost";
+            socket.broadcast.emit("grabDrop", data);
+        };
+
     });
 });
 
