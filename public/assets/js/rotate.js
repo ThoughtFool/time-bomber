@@ -75,12 +75,13 @@
     function spawnDrop(boxDropID, dropClass, dropCount) {
 
             let randDrop = document.createElement("DIV");
-            randDrop.classList.add("rand-drop", dropClass);
+            randDrop.classList.add("rand-drop", dropClass, `${dropClass}-pulse`);
             // drop.classList.add("randDrop", "glow");
             randDrop.setAttribute("id", `randDrop-${dropCount}`);
 
             let boxToDrop = document.getElementById(boxDropID);
             boxToDrop.append(randDrop);
+            boxToDrop.classList.add("heart-wrapper");
             boxToDrop.classList.add(dropClass);
             boxToDrop.classList.add("random-drop");
 
@@ -517,7 +518,7 @@
             let newCircle = document.createElement("div");
             newCircle.id = dropBoxID;
             newCircle.classList.add("clock-parts", "item-box", "empty");
-            newCircle.style.border = "thin dotted red";
+            // newCircle.style.border = "thin dotted red";
             // newCircle.style.backgroundColor = "purple";
 
             mainCircle.append(newCircle);
@@ -592,10 +593,13 @@
         } else if (status === "upgrade") {
             let elem = bombBox.getElementsByClassName("rand-drop")[0];
             bombBox.removeChild(elem);
-            
+            bombBox.classList.remove("heart-wrapper");
             bombBox.classList.remove("heart");
+            bombBox.classList.remove("heart-pulse");
             bombBox.classList.remove("ghost");
+            bombBox.classList.remove("ghost-pulse");
             bombBox.classList.remove("glove");
+            bombBox.classList.remove("glove-pulse");
             bombBox.classList.remove("random-drop");
 
             updateStats(user, "heal");
@@ -610,9 +614,13 @@
                 console.log(dropCount);
 
                 bombBox.removeChild(elem);
+                bombBox.classList.remove("heart-wrapper");
                 bombBox.classList.remove("heart");
+                bombBox.classList.remove("heart-pulse");
                 bombBox.classList.remove("ghost");
+                bombBox.classList.remove("ghost-pulse");
                 bombBox.classList.remove("glove");
+                bombBox.classList.remove("glove-pulse");
                 bombBox.classList.remove("random-drop");
 
                 // if (dropCount <= 1) {
@@ -635,9 +643,13 @@
                 // console.log(dropCount);
 
                 bombBox.removeChild(elem);
+                bombBox.classList.remove("heart-wrapper");
                 bombBox.classList.remove("heart");
+                bombBox.classList.remove("heart-pulse");
                 bombBox.classList.remove("ghost");
+                bombBox.classList.remove("ghost-pulse");
                 bombBox.classList.remove("glove");
+                bombBox.classList.remove("glove-pulse");
                 bombBox.classList.remove("random-drop");
 
                 socket.emit("randomDrop", {
