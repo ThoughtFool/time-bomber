@@ -746,12 +746,14 @@
     function displayStats(string, user) {
         let healthStat = document.getElementById("health-status");
         let healthStatOpponent = document.getElementById("health-status-opponent");
+        let flashDiv = document.querySelector(".stats-opponent");
 
         if (string === "toUser") {
             healthStat.innerText = user.health;
 
         } else if (string === "toOpponent") {
             healthStatOpponent.innerText = user.health;
+            // flashDiv.classList.add("pulse-score");
 
         } else {
             

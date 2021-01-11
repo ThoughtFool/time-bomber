@@ -19,6 +19,7 @@
     },
     "homepage": "https://github.com/ThoughtFool/time-bomber#readme",
     "dependencies": {
+        "ejs": "^3.1.5",
         "express": "^4.17.1",
         "socket.io": "^3.0.4",
         "webpack": "^4.41.0"

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Bomber</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1 class="glow">Time Bomber</h1>
+    <div id="time-bubble"></div>
+
+    <a class="enter-btn" href="/game">ENTER</a>
+
+    <div class="msg-block">
+        <h2 id="intro-msg"></h2>
+    </div>
+
+    <div id="game-screen" class="surface"></div>
+    <button class="startBtn" style="display: none;"></button>
+
+    <div id="modal-bg">
+        <div class="modal-body">
+            <h1 class="modal-text"></h1>
+        </div>
+        <button id="ready-modal">READY!</button>
+        <button id="continue-modal">CONTINUE!</button>
+        <button id="return-modal">RETURN!</button>
+        <button id="done-modal">DONE!</button>
+    </div>
+
+    <script src="./intro.js"></script>
+</body>
+
+</html>

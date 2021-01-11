@@ -8,6 +8,8 @@ const socketIO = require("socket.io");
 
 const port = process.env.PORT || 8081;
 
+app.set('view engine', 'ejs');
+
 const server = http.createServer(app);
 const io = socketIO(server);
 let dropCount = 0;
@@ -15,10 +17,12 @@ let initNum = 0;
 
 app.use(express.static(__dirname + "/public"));
 app.get('/', (req, res) => {
-    res.render('index.html');
+    res.render('splash');
 });
 
-
+app.get('/game', (req, res) => {
+    res.render('index');
+});
 
 io.on("connection", (socket) => {
     console.log(`A user is connected. Please welcome user: ${socket.id}.`);
@@ -80,7 +84,7 @@ io.on("connection", (socket) => {
                 console.log("randDropBoxID");
                 console.log(randDropBoxID);
 
-                let randomItemIndex = Math.floor(Math.random() * 2);
+                let randomItemIndex = Math.floor(Math.random() * dropItemsArr.length);
                 let randDropItem = dropItemsArr[randomItemIndex];
                 randomTime(randDropBoxID, randDropItem);
 
