@@ -2,11 +2,51 @@ const express = require("express");
 const app = express();
 
 const http = require("http");
+const { join } = require("path");
 const path = require("path");
 
 const socketIO = require("socket.io");
 
 const port = process.env.PORT || 8081;
+
+const roomData = {
+    roomCounter: 1, // currently open room. counter increment when two enter room
+    rooms: [{
+        players: ["quincy taggert", "jason nesmith"],
+        roomID: "Room: 0",
+        open: false
+    },
+    {
+        players: ["tech sargeant chen"],
+        roomID: "Room: 1",
+        open: true
+    }],
+    isAvailable: function (newPlayer) {
+        if (this.players.length < 1) {
+            this.players.push(newPlayer);
+        } else if (this.players.length < 2) {
+            this.players.push(newPlayer);
+            roomData.roomCounter++;
+        } else {
+            
+        };
+    },
+    findRoom: function () {
+        for (var i = 0; i < this.rooms.length; i++) {
+            if (this.rooms[i].open === true) {
+                return this.rooms[i]; //indexOf()
+            };
+        };
+        return this.createRoom();
+    },
+    search: function (nameKey, myArray) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i].name === nameKey) {
+                return myArray[i];
+            }
+        }
+    }
+};
 
 app.set('view engine', 'ejs');
 
@@ -26,6 +66,45 @@ app.get('/game', (req, res) => {
 
 io.on("connection", (socket) => {
     console.log(`A user is connected. Please welcome user: ${socket.id}.`);
+
+    socket.on("enterRoom", () => {
+        const roomNames = [];
+        for (const id in rooms) {
+            const { name } = rooms[id];
+            const room = { name, id };
+            roomNames.push(room);
+        };
+        cb(roomNames);
+        io.emit("enterRoom");
+    });
+
+    socket.on("createRoom", (roomName, cb) => {
+        const room = {
+            id: uuid(),
+            name: roomName,
+            sockets: []
+        };
+        rooms[room.id] = room;
+
+        // socket joins the new room:
+        joinRoom(socket, room);
+        cb();
+
+        io.emit("createRoom");
+    });
+
+    socket.on("joinRoom", (data, cb) => {
+        const roomNames = [];
+        for (const id in rooms) {
+            const {name} = rooms[id];
+            const room = {name, id};
+            roomNames.push(room);
+        };
+        cb(roomNames);
+        io.emit("joinRoom");
+    });
+
+    // socket.join(`Room: ${roomData.roomCounter}`);
 
     socket.on("startGame", () => {
         io.emit("startGame");
