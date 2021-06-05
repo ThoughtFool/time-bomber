@@ -10,6 +10,7 @@ Create a multi-player game that utilizes sockets for real-time player drops. Eac
 ### CHALLENGE ACCEPTED!
 
 ![time-bomber-gameplay](assets/time-bomber-gameplay.gif)
+https://time-bomber.herokuapp.com/game
 
 ### Technology & Tools
 
