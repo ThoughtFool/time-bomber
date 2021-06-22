@@ -1,0 +1,162 @@
+.world-holder {
+  position: relative;
+  padding-top: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  background: url("./clock-runner-sm-R.png");
+  /* background: url("./clock.png"); */
+  background-repeat: no-repeat;
+  background-size: 300px;
+  height: 200px;
+  width: 200px;
+  /* position: relative; */
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+#clock {
+  background: url("./clock.png");
+  /* background: url("./clock.png"); */
+  background-repeat: no-repeat;
+  background-size: 50px;
+  height: 50px;
+  width: 50px;
+  position: absolute;
+}
+
+.bomb-drop {
+  background-color: aqua;
+  border-radius: 50%;
+  height: 10%;
+  width: 50%;
+  border: red 10px solid;
+  position: relative;
+  text-align: center;
+}
+
+div {
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+body {
+  background-image: linear-gradient(rgb(23, 167, 233), purple);
+}
+
+#road {
+  border-bottom: 7px dashed black;
+}
+
+#runner {
+  width: 200px;
+  height: 202px;
+}
+
+.move-left {
+  animation: walk-left 1s steps(6) infinite, backward 15s linear infinite,
+    rotate-left 8s infinite linear;
+  transition-timing-function: ease-in;
+  transition: 0.25s;
+}
+
+.move-right {
+  animation: walk-right 1s steps(6) infinite, forward 15s linear infinite,
+    rotate-right 8s infinite linear;
+  transition-timing-function: ease-in;
+  transition: 0.25s;
+}
+
+.move-forward {
+  animation: walk-forward 1s steps(4) 3, backward 15s linear infinite;
+}
+
+.move-backward {
+  animation: walk-backward 1s steps(4) 3, forward 15s linear infinite;
+}
+
+@keyframes walk-left {
+  0% {
+    background-position: 0px;
+  }
+
+  100% {
+    background-position: 1196px;
+  }
+}
+
+@keyframes walk-right {
+  0% {
+    background-position: 1196px;
+  }
+
+  100% {
+    background-position: 0px;
+  }
+}
+
+@keyframes walk-forward {
+  0% {
+    background-position: 0px;
+  }
+
+  100% {
+    background-position: 1196px;
+  }
+}
+
+@keyframes walk-backward {
+  0% {
+    background-position: 0px;
+  }
+
+  100% {
+    background-position: 1196px;
+  }
+}
+
+@keyframes rotate-right {
+  from {
+    transform: rotate(0deg);
+    transform-origin: center;
+  }
+
+  to {
+    transform: rotate(359deg);
+    transform-origin: center;
+  }
+}
+
+@keyframes rotate-left {
+  from {
+    transform: rotate(359deg);
+    transform-origin: center;
+  }
+
+  to {
+    transform: rotate(0deg);
+    transform-origin: center;
+  }
+}
+
+/* Standard syntax */
+@keyframes mymove {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform-origin: center;
+  }
+}
