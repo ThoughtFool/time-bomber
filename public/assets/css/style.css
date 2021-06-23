@@ -809,37 +809,56 @@ body {
   }
 }
 
-/* .hand {
-  position: absolute;
-  background-image: linear-gradient(
-    rgba(255, 255, 255, 0.575),
-    rgba(128, 128, 128, 0.521)
-  );
-  width: 20px;
-  top: 195px;
-  left: 190px;
-
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  border: 2px solid black;
-} */
-
-/* .second-hand {
-  height: 200px;
-  background-image: linear-gradient(
-    rgba(155, 131, 233, 0.575),
-    rgba(33, 31, 36, 0.521)
-  );
-} */
-
-/* .minute-hand {
-  height: 150px;
+.splash-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
 }
 
-.hour-hand {
-  height: 100px;
-} */
+.text-background {
+  background-image: url("../images/fire-smoke.mp4");
+  background-position: center;
+  background-size: cover;
+}
+
+.text-background > h1 {
+  width: 100vw;
+  text-align: center;
+  font-size: 15vw;
+  font-weight: bold;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #000;
+  background: #fff;
+  mix-blend-mode: lighten;
+}
+
+.msg-block {
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  width: auto;
+  font-size: 2vw;
+  color: aliceblue;
+}
+
+.enter-btn {
+  position: absolute;
+  display: flex;
+  text-decoration: none;
+  height: 75px;
+  width: 75px;
+  background-color: #af4add;
+  box-shadow: 0 5px 45px blueviolet, inset 0 0 15px rgb(68, 7, 180),
+    inset 0 0 15px rgb(7, 39, 180);
+  border-radius: 50%;
+}
+
+.enter-btn > span {
+  display: flex;
+  margin: auto;
+  text-align: center;
+  color: white;
+}

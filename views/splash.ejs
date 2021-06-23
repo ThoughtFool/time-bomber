@@ -5,33 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Bomber</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
-    <h1 class="glow">Time Bomber</h1>
-    <div id="time-bubble"></div>
+    <div class="splash-container">
 
-    <a class="enter-btn" href="/game">ENTER</a>
+        <div class="text-background">
+            <h1>Time Bomber</h1>
+            <a class="enter-btn glow" href="/game"><span>ENTER</span></a>
 
-    <div class="msg-block">
-        <h2 id="intro-msg"></h2>
-    </div>
-
-    <div id="game-screen" class="surface"></div>
-    <button class="startBtn" style="display: none;"></button>
-
-    <div id="modal-bg">
-        <div class="modal-body">
-            <h1 class="modal-text"></h1>
+            <div class="msg-block">
+                <h2 id="intro-msg"> Timing is Everything! </h2>
+                <!-- <a class="enter-btn" href="/game"><span>ENTER</span></a> -->
+            </div>
         </div>
-        <button id="ready-modal">READY!</button>
-        <button id="continue-modal">CONTINUE!</button>
-        <button id="return-modal">RETURN!</button>
-        <button id="done-modal">DONE!</button>
     </div>
 
-    <script src="./intro.js"></script>
+    <script src="assets/js/intro.js"></script>
 </body>
 
 </html>
