@@ -22,3 +22,5 @@ https://time-bomber.herokuapp.com/game
 - allow user to manually adjust clock hands
 - remove blue bombs from visibility (only for testing)
 - allow for up to 4 players to join the fight
+- add color mods for player avatars
+- add special drops to make enemies visible
