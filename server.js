@@ -1,4 +1,7 @@
-require("dotenv").config();
+if (process.env.NODE_ENV === "development") {
+    require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 
@@ -67,16 +70,18 @@ app.use("/users", require("./routes/users"));
 
 const roomData = {
     roomCounter: 1, // currently open room. counter increment when two enter room
-    rooms: [{
-        players: ["quincy taggert", "jason nesmith"],
-        roomID: "Room: 0",
-        open: false
-    },
-    {
-        players: ["tech sargeant chen"],
-        roomID: "Room: 1",
-        open: true
-    }],
+    rooms: [
+        {
+            players: ["quincy taggert", "jason nesmith"],
+            roomID: "Room: 0",
+            open: false,
+        },
+        {
+            players: ["tech sargeant chen"],
+            roomID: "Room: 1",
+            open: true,
+        },
+    ],
     isAvailable: function (newPlayer) {
         if (this.players.length < 1) {
             this.players.push(newPlayer);
@@ -84,15 +89,14 @@ const roomData = {
             this.players.push(newPlayer);
             roomData.roomCounter++;
         } else {
-            
-        };
+        }
     },
     findRoom: function () {
         for (var i = 0; i < this.rooms.length; i++) {
             if (this.rooms[i].open === true) {
                 return this.rooms[i]; //indexOf()
-            };
-        };
+            }
+        }
         return this.createRoom();
     },
     search: function (nameKey, myArray) {
@@ -101,7 +105,7 @@ const roomData = {
                 return myArray[i];
             }
         }
-    }
+    },
 };
 
 // ====================== SOCKET IO ======================
@@ -112,7 +116,6 @@ let dropCount = 0;
 let initNum = 0;
 
 app.use(express.static(path.join(__dirname + "/public")));
-
 
 // app.get('/splash', (req, res) => {
 //     res.render('splash');
@@ -133,7 +136,7 @@ io.on("connection", (socket) => {
             const { name } = rooms[id];
             const room = { name, id };
             roomNames.push(room);
-        };
+        }
         cb(roomNames);
         io.emit("enterRoom");
     });
@@ -142,7 +145,7 @@ io.on("connection", (socket) => {
         const room = {
             id: uuid(),
             name: roomName,
-            sockets: []
+            sockets: [],
         };
         rooms[room.id] = room;
 
@@ -156,10 +159,10 @@ io.on("connection", (socket) => {
     socket.on("joinRoom", (data, cb) => {
         const roomNames = [];
         for (const id in rooms) {
-            const {name} = rooms[id];
-            const room = {name, id};
+            const { name } = rooms[id];
+            const room = { name, id };
             roomNames.push(room);
-        };
+        }
         cb(roomNames);
         io.emit("joinRoom");
     });
@@ -171,7 +174,9 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-        console.log(`A user has disconnected. Please come back soon, user: ${socket.id}.`);
+        console.log(
+            `A user has disconnected. Please come back soon, user: ${socket.id}.`
+        );
     });
 
     socket.on("addBombNow", (data) => {
@@ -198,7 +203,6 @@ io.on("connection", (socket) => {
     });
 
     socket.on("randomDrop", (data) => {
-
         let dropItemsArr = ["heart", "ghost", "glove"];
         // dropCount = data.dropCount;
 
@@ -209,51 +213,53 @@ io.on("connection", (socket) => {
 
         if (initNum >= 1 && initNum % 2 !== 0) {
             randomDrop(data);
-
         } else if (data.missed === false) {
             randomDrop(data);
-
         } else {
             console.log(data);
-        };
+        }
 
-            function randomDrop(data) {
-                let randomDropBoxIndex = Math.floor(Math.random() * data.itemBoxCoords.length);
-                let randDropBoxID = data.itemBoxCoords[randomDropBoxIndex].id;
-                console.log("randDropBoxID");
-                console.log(randDropBoxID);
+        function randomDrop(data) {
+            let randomDropBoxIndex = Math.floor(
+                Math.random() * data.itemBoxCoords.length
+            );
+            let randDropBoxID = data.itemBoxCoords[randomDropBoxIndex].id;
+            console.log("randDropBoxID");
+            console.log(randDropBoxID);
 
-                let randomItemIndex = Math.floor(Math.random() * dropItemsArr.length);
-                let randDropItem = dropItemsArr[randomItemIndex];
-                randomTime(randDropBoxID, randDropItem);
+            let randomItemIndex = Math.floor(
+                Math.random() * dropItemsArr.length
+            );
+            let randDropItem = dropItemsArr[randomItemIndex];
+            randomTime(randDropBoxID, randDropItem);
 
-                // get array of bomb drops
-                // use randomized dice throw to determine how much time before next drop
-                // Math.random() decides which item to throw
-                // calls function to place items
+            // get array of bomb drops
+            // use randomized dice throw to determine how much time before next drop
+            // Math.random() decides which item to throw
+            // calls function to place items
 
-                function randomTime(randDropBoxID, randDropItem) {
-                    // boxDropID, dropClass, dropCount
-                    console.log("Randomized Drops");
-                    let milliseconds = 1000;
-                    randomTimeout = Math.floor(Math.random() * 10 + 5) * milliseconds;
-                    console.log("randomTimeout");
-                    console.log(randomTimeout);
-                    // randomDrop(randomItemIndex, dropItemArr, data);
+            function randomTime(randDropBoxID, randDropItem) {
+                // boxDropID, dropClass, dropCount
+                console.log("Randomized Drops");
+                let milliseconds = 1000;
+                randomTimeout =
+                    Math.floor(Math.random() * 10 + 5) * milliseconds;
+                console.log("randomTimeout");
+                console.log(randomTimeout);
+                // randomDrop(randomItemIndex, dropItemArr, data);
 
-                    // if (dropCount <= 1) {
-                    //     dropCount++;
-                        setTimeout(async () => {
-                            await io.emit("randomDrop", {
-                                randID: randDropBoxID,
-                                randItem: randDropItem,
-                                dropCount: dropCount
-                            });
-                            
-                        }, randomTimeout);
-                    // };
-                };
-            };
+                // if (dropCount <= 1) {
+                //     dropCount++;
+                setTimeout(async () => {
+                    await io.emit("randomDrop", {
+                        randID: randDropBoxID,
+                        randItem: randDropItem,
+                        dropCount: dropCount,
+                    });
+                }, randomTimeout);
+                // };
+            }
+        }
         // };
         initNum++;
     });
@@ -261,7 +267,6 @@ io.on("connection", (socket) => {
     // function switchUserInfo ()
 
     socket.on("grabDrop", (data) => {
-
         // if (dropCount > 0 && dropCount < 2) {
         //     dropCount--;
         //     data.dropCount = dropCount;
@@ -271,21 +276,22 @@ io.on("connection", (socket) => {
 
         if (data.status === "missed") {
             io.emit("grabDrop", data);
-
         } else {
             socket.emit("grabDrop", data); //status = "upgrade"
 
             // send update to all users except initiator:
             data.status = "lost";
             socket.broadcast.emit("grabDrop", data);
-        };
+        }
     });
 });
 
-server.listen(PORT, () => console.log(`Time Bomber app listening on PORT ${PORT}!`));
+server.listen(PORT, () =>
+    console.log(`Time Bomber app listening on PORT ${PORT}!`)
+);
 
 // const socket = io({
 //     auth: (cb) => {
 //         cb(localStorage.getItem("token"));
 //     }
-// });  
+// });
