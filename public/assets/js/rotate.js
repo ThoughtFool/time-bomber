@@ -16,19 +16,19 @@ let itemBoxCoords = [];
 
 let user = {
     health: 100,
-    bombCount: 5
+    bombCount: 5,
 };
 
 let opponent = {
     health: 100,
-    bombCount: 5
+    bombCount: 5,
 };
 
 let zone = {
     active: false,
     bombID: "",
     bombLoc: "",
-    drop: false
+    drop: false,
 };
 
 // // global test vars:
@@ -55,11 +55,10 @@ let zone = {
 // const database = firebase.database();
 
 // database.ref().on("change", function (snap) {
-//     
+//
 // });
 
 function spawnBomb(dropCount, boxDropID, bombClass, activeBomb) {
-
     let bomb = document.createElement("DIV");
     bomb.classList.add("bomb", bombClass, activeBomb);
     // bomb.classList.add("bomb", "glow");
@@ -70,10 +69,9 @@ function spawnBomb(dropCount, boxDropID, bombClass, activeBomb) {
     boxToDrop.classList.remove("empty");
     boxToDrop.classList.add(bombClass);
     boxToDrop.classList.add("boom-box");
-};
+}
 
 function spawnDrop(boxDropID, dropClass, dropCount) {
-
     let randDrop = document.createElement("DIV");
     randDrop.classList.add("rand-drop", dropClass, `${dropClass}-pulse`);
     // drop.classList.add("randDrop", "glow");
@@ -87,17 +85,15 @@ function spawnDrop(boxDropID, dropClass, dropCount) {
 
     let second = 1000;
     setTimeout(() => {
-
         socket.emit("grabDrop", {
             dropID: "",
             dropLoc: boxDropID,
             status: "missed",
-            dropCount: dropCount
+            dropCount: dropCount,
         });
-
     }, 10 * second);
     // };
-};
+}
 
 socket.on("addBombNow", (data) => {
     spawnBomb(data.dropCount, data.boxDropID, data.bombClass, data.activeBomb);
@@ -105,7 +101,6 @@ socket.on("addBombNow", (data) => {
 
 socket.on("explosion", (data) => {
     explode(data.status, data.bombID, data.bombLoc);
-
 });
 
 socket.on("grabDrop", (data) => {
@@ -136,7 +131,6 @@ socket.on("randomDrop", (data) => {
     spawnDrop(data.randID, data.randItem, data.dropCount);
     // };
 
-
     // setTimeout(async () => {
     //     if (dropCount < 1) {
     //         await socket.emit("randomDrop", {
@@ -148,9 +142,7 @@ socket.on("randomDrop", (data) => {
 });
 
 async function naviCtrl(value) {
-
     if (value.key === "ArrowDown" || value.target.id === "nav-down") {
-
         // clockDrop = document.getElementById("clock");
         // bomb = this.createElement("DIV");
         // bomb.classList.add("bomb");
@@ -160,8 +152,6 @@ async function naviCtrl(value) {
         // create cartesian coord function to check if (x, y) are inside of boxDrop array
         console.log("=================== itemBoxArray ===================");
 
-
-
         function coordChecker(dropperID) {
             let dropper = document.getElementById(dropperID);
             let dropperRect = dropper.getBoundingClientRect();
@@ -169,29 +159,32 @@ async function naviCtrl(value) {
             for (let i = 0; i < itemBoxArray.length; i++) {
                 let dropArrItem = itemBoxArray[i].getBoundingClientRect();
 
-                if (dropArrItem.left < dropperRect.right &&
+                if (
+                    dropArrItem.left < dropperRect.right &&
                     dropArrItem.right > dropperRect.left &&
                     dropArrItem.top < dropperRect.bottom &&
-                    dropArrItem.bottom > dropperRect.top) {
+                    dropArrItem.bottom > dropperRect.top
+                ) {
                     return itemBoxArray[i].id;
-                };
-            };
-        };
+                }
+            }
+        }
 
         //////////////////////////////////////////////////////
         // console.log(coordChecker("dropper"));
-        const boxToDrop = document.getElementById(await coordChecker("dropper"));
+        const boxToDrop = document.getElementById(
+            await coordChecker("dropper")
+        );
 
         if (boxToDrop.classList.contains("empty")) {
             socket.emit("addBombNow", {
                 bombDropCount: bombDropCount,
                 boxDropID: boxToDrop.id,
                 bombClass: "glow",
-                activeBomb: "inactive"
+                activeBomb: "inactive",
                 // boxToDrop.append(bomb);
                 // boxToDrop.classList.remove("empty");
                 // boxToDrop.classList.add("boom");
-
             });
             // TODO: when bomb timer runs out or explodes --> boxToDrop.classList.add("empty");
             //////////////////////////////////////////////////////
@@ -199,37 +192,37 @@ async function naviCtrl(value) {
             // function mapDrop(dropLocID) {
 
             bombDropCount++;
-        };
+        }
 
-    } else if (value.key === "ArrowUp" || value.target.id === "nav-up") {
-        // dropDiv.style.backgroundImage = "url('')";
-        hazRunner.style.background = "url('../../../public/assets/images/hazmat-runner-frontside.png')";
-        hazRunner.classList.remove("move-left");
-        hazRunner.classList.remove("move-right");
-        hazRunner.classList.remove("move-forward");
-        hazRunner.classList.remove("move-backward");
-        hazRunner.classList.add("move-backward");
-
+        // } else if (value.key === "ArrowUp" || value.target.id === "nav-up") {
+        //     // dropDiv.style.backgroundImage = "url('')";
+        // TODO: add animation for forward-facing hazmat runner:
+        //     hazRunner.style.background = "url('../assets/images/hazmat-runner-frontside-single.png')";
+        //     hazRunner.classList.remove("move-left");
+        //     hazRunner.classList.remove("move-right");
+        //     hazRunner.classList.remove("move-forward");
+        //     hazRunner.classList.remove("move-backward");
+        //     hazRunner.classList.add("move-backward");
     } else if (value.key === "ArrowRight" || value.target.id === "nav-right") {
         // dropDiv.style.backgroundImage = "url('')";
-        hazRunner.style.background = "url('../assets/images/clock-runner-xs-R.png')";
+        hazRunner.style.background =
+            "url('../assets/images/clock-runner-xs-R.png')";
         hazRunner.classList.remove("move-left");
         hazRunner.classList.remove("move-right");
         hazRunner.classList.remove("move-forward");
         hazRunner.classList.remove("move-backward");
         hazRunner.classList.add("move-right");
         rotateAnimationRight("clock-runner", 50);
-
     } else if (value.key === "ArrowLeft" || value.target.id === "nav-left") {
         // dropDiv.style.backgroundImage = "url('')";
-        hazRunner.style.background = "url('../assets/images/clock-runner-xs-L.png')";
+        hazRunner.style.background =
+            "url('../assets/images/clock-runner-xs-L.png')";
         hazRunner.classList.remove("move-left");
         hazRunner.classList.add("move-left");
         hazRunner.classList.remove("move-right");
         hazRunner.classList.remove("move-forward");
         hazRunner.classList.remove("move-backward");
         rotateAnimationLeft("clock-runner", 50);
-
     } else if (value.key === "i" || value.key === "I") {
         clockDrop = document.getElementById("clock");
         bomb = this.createElement("DIV");
@@ -250,8 +243,8 @@ async function naviCtrl(value) {
         bomb = this.createElement("DIV");
         bomb.classList.add("bomb");
         clockDrop.append(bomb);
-    };
-};
+    }
+}
 
 document.addEventListener("touchstart", naviCtrl, false);
 
@@ -271,7 +264,6 @@ document.addEventListener("keydown", naviCtrl, false);
 // });
 
 function rotateAnimationRight(el, speed) {
-
     elem = document.getElementById(el);
     elem.style.transform = "rotate(" + degrees + "deg)";
 
@@ -284,19 +276,21 @@ function rotateAnimationRight(el, speed) {
     bodyPos = document.body.getBoundingClientRect();
     containerPos = container.getBoundingClientRect();
 
-    widthOffset = (position.width / 2);
-    heightOffset = (position.height / 2);
+    widthOffset = position.width / 2;
+    heightOffset = position.height / 2;
 
-    x = (position.left + widthOffset);
-    y = (position.top + heightOffset);
+    x = position.left + widthOffset;
+    y = position.top + heightOffset;
 
     // ('rotateAnimationRight(\'' + el + '\',' + speed + ')', speed);
-    loopRight = setTimeout('rotateAnimationRight(\'' + el + '\',' + speed + ')', speed);
+    loopRight = setTimeout(
+        "rotateAnimationRight('" + el + "'," + speed + ")",
+        speed
+    );
     degrees++;
-};
+}
 
 function rotateAnimationLeft(el, speed) {
-
     // elem = document.getElementById(el);
     // elem.style.transform = "rotate(" + degrees + "deg)";
     // clearInterval(loopRight);
@@ -314,22 +308,22 @@ function rotateAnimationLeft(el, speed) {
     bodyPos = document.body.getBoundingClientRect();
     containerPos = container.getBoundingClientRect();
 
-    widthOffset = (position.width / 2);
-    heightOffset = (position.height / 2);
+    widthOffset = position.width / 2;
+    heightOffset = position.height / 2;
 
-    x = (position.left + widthOffset);
-    y = (position.top + heightOffset);
+    x = position.left + widthOffset;
+    y = position.top + heightOffset;
 
-    loopLeft = setTimeout('rotateAnimationLeft(\'' + el + '\',' + speed + ')', speed);
+    loopLeft = setTimeout(
+        "rotateAnimationLeft('" + el + "'," + speed + ")",
+        speed
+    );
     degrees--;
-};
+}
 
 bodyWidth = document.body.getBoundingClientRect().width;
 
-
 bodyRectLeft = document.body.getBoundingClientRect().left;
-
-
 
 containerTest = container.getBoundingClientRect();
 ////////////////////////////////////////////////////////////////////////
@@ -341,14 +335,10 @@ container_Y = container.getBoundingClientRect().top;
 
 containerOffset_LEFT = container.offsetLeft;
 
-
 ////////////////////////////////////////////////////////////////////////
 
 myResizeFunc = function () {
-
     let newBodyWidth = document.body.getBoundingClientRect().width;
-
-
 
     newContainerTestWidth = container.getBoundingClientRect().width;
 
@@ -356,14 +346,7 @@ myResizeFunc = function () {
     for (let i = 0; i < droppedBombs.length - 1; i++) {
         moveBomb = document.getElementById(`bomb-${i}`);
 
-
-
-
-
-
         new_containerOffset_LEFT = container.offsetLeft;
-
-
 
         let bomb_X = moveBomb.getBoundingClientRect().left;
         let bomb_Y = moveBomb.getBoundingClientRect().top;
@@ -380,75 +363,49 @@ myResizeFunc = function () {
         // percentBigger_X = container_X / bomb_X;
         percentBigger_X = containerOffset_LEFT / bomb_X;
 
-
-
         percentBigger_Y = container_Y / bomb_Y;
-
 
         ////////////////////////////////////////////////////////////////////////
         // offset_X = bomb_X - container_X;
         offset_X = bomb_X - containerOffset_LEFT;
 
-
-
         offset_Y = bomb_X - container_Y;
-
 
         ////////////////////////////////////////////////////////////////////////
         newPos_X = new_containerOffset_LEFT / percentBigger_X;
         // newPos_X = new_container_X / percentBigger_X;
 
-
         newPos_Y = new_container_Y / percentBigger_Y;
 
-
         ////////////////////////////////////////////////////////////////////////
-        moveBomb.style.left = (newPos_X) + "px";
-        moveBomb.style.top = (newPos_Y) + "px";
+        moveBomb.style.left = newPos_X + "px";
+        moveBomb.style.top = newPos_Y + "px";
         ////////////////////////////////////////////////////////////////////////
-    };
+    }
 };
 
 btnClick = function () {
     bodyWidth = document.body.getBoundingClientRect().width;
 
-
     containerWidth = container.getBoundingClientRect().width;
-
-
 
     bodyHeight = document.body.getBoundingClientRect().height;
 
-
     containerHeight = container.getBoundingClientRect().height;
-
-
 
     bodyRectLeft = document.body.getBoundingClientRect().left;
 
-
     containerRectLeft = container.getBoundingClientRect().left;
-
-
 };
 
 findOffsetLeft = function (bodyWidth, bombWidth, newbodyWidth, bodyRectLeft) {
-
     let emptyWidth = bodyWidth - bombWidth;
-
-
 
     let percentTotal_Empty = emptyWidth / bodyWidth;
 
-
-
     let percentEach_Empty = percentTotal_Empty / 2;
 
-
-
     let newEmptySpaceWidth = percentEach_Empty * newbodyWidth;
-
-
 
     let newBombRectLeft = newEmptySpaceWidth + bodyRectLeft;
 
@@ -476,15 +433,19 @@ function startGameFunc() {
 
     // ==============================================
 
+    let value = { key: "ArrowRight", target: { id: "nav-right" } };
+    // console.log(value);
+    naviCtrl(value);
+
     infoBar.style.display = "block";
-    infoBarOpponent.style.display = "block"
+    infoBarOpponent.style.display = "block";
 
     displayStats("toUser", user);
     displayStats("toOpponent", user);
 
     socket.emit("randomDrop", {
         itemBoxCoords: itemBoxCoords,
-        dropCount: dropCount
+        dropCount: dropCount,
     });
 
     // TODO: testing event loop:
@@ -494,19 +455,20 @@ function startGameFunc() {
         console.log("zone");
         console.log(zone);
 
-        if (zone.active) { ///////////////////////////////////////////////////////////
+        if (zone.active) {
+            ///////////////////////////////////////////////////////////
             socket.emit("explosion", {
                 bombID: zone.bombID,
                 bombLoc: zone.bombLoc,
-                status: "detonate"
+                status: "detonate",
             });
-        };
+        }
 
         if (zone.drop) {
             socket.emit("grabDrop", {
                 dropID: zone.dropID,
                 dropLoc: zone.dropLoc,
-                status: "upgrade"
+                status: "upgrade",
             });
         }
     }, 250);
@@ -516,12 +478,12 @@ function startGameFunc() {
     // share drop array ID with server random drop function:
     ////////////////////////////////////////////////////////////////////
     // });
-};
+}
 
 let fragment;
 
 function addCircleFunc(numCircle, bigCircleSize) {
-    let smallCircleSize = Math.round(bigCircleSize * Math.PI / numCircle);
+    let smallCircleSize = Math.round((bigCircleSize * Math.PI) / numCircle);
     let rotation = 0;
     const dropBoxArr = [];
     // let dropBoxIDArr = [];
@@ -546,13 +508,17 @@ function addCircleFunc(numCircle, bigCircleSize) {
 
         let theta = (angle / 180) * i * Math.PI;
 
-        let posx = Math.round((bigCircleSize / 2) * (Math.cos(theta))) + 'px';
-        let posy = Math.round((bigCircleSize / 2) * (Math.sin(theta))) + 'px';
+        let posx = Math.round((bigCircleSize / 2) * Math.cos(theta)) + "px";
+        let posy = Math.round((bigCircleSize / 2) * Math.sin(theta)) + "px";
 
-        let bigCircleHeight = parseInt(window.getComputedStyle(mainCircle).height.slice(0, -2));
+        let bigCircleHeight = parseInt(
+            window.getComputedStyle(mainCircle).height.slice(0, -2)
+        );
 
-        newDropBox.style.top = ((bigCircleHeight / 2) - parseInt(posy.slice(0, -2))) + 'px';
-        newDropBox.style.left = ((bigCircleHeight / 2) + parseInt(posx.slice(0, -2))) + 'px';
+        newDropBox.style.top =
+            bigCircleHeight / 2 - parseInt(posy.slice(0, -2)) + "px";
+        newDropBox.style.left =
+            bigCircleHeight / 2 + parseInt(posx.slice(0, -2)) + "px";
 
         // rotation = rotation + angle;
 
@@ -563,16 +529,13 @@ function addCircleFunc(numCircle, bigCircleSize) {
         let smallMargin = -(smallCircleSize / 2);
 
         newDropBox.style.margin = `${smallMargin}px`;
-
-    };
+    }
 
     // TODO: getItemBoxCoords(dropBoxArr);
     return getItemBoxCoords();
-};
+}
 
 function explode(status, bombID, bombLoc) {
-
-
     let bombBox = document.getElementById(bombLoc);
 
     if (status === "detonate") {
@@ -588,20 +551,16 @@ function explode(status, bombID, bombLoc) {
                 bombBox.classList.add("empty");
                 updateStats(user, "damage");
             }, 500);
-        };
-
+        }
     } else if (status === "remove") {
-
         let elem = bombBox.getElementsByClassName("bomb")[0];
         if (typeof elem !== "object") {
-
         } else {
             bombBox.removeChild(elem);
             bombBox.classList.remove("glow");
             bombBox.classList.remove("boom-box");
             bombBox.classList.add("empty");
-        };
-
+        }
     } else if (status === "upgrade") {
         let elem = bombBox.getElementsByClassName("rand-drop")[0];
         bombBox.removeChild(elem);
@@ -615,12 +574,9 @@ function explode(status, bombID, bombLoc) {
         bombBox.classList.remove("random-drop");
 
         updateStats(user, "heal");
-
     } else if (status === "missed") {
-
         let elem = bombBox.getElementsByClassName("rand-drop")[0];
         if (typeof elem !== "object") {
-
         } else {
             dropCount--;
             console.log(dropCount);
@@ -640,16 +596,13 @@ function explode(status, bombID, bombLoc) {
                 itemBoxCoords: itemBoxCoords,
                 dropCount: dropCount,
                 deployed: false,
-                missed: true
+                missed: true,
             });
             // };
-        };
-
+        }
     } else if (status === "lost") {
-
         let elem = bombBox.getElementsByClassName("rand-drop")[0];
         if (typeof elem !== "object") {
-
         } else {
             // dropCount--;
             // console.log(dropCount);
@@ -668,45 +621,39 @@ function explode(status, bombID, bombLoc) {
                 itemBoxCoords: itemBoxCoords,
                 dropCount: dropCount,
                 deployed: false,
-                missed: false
+                missed: false,
             });
-        };
-
+        }
     } else {
         alert("issue found");
-    };
-};
+    }
+}
 
 function getItemBoxCoords() {
     let itemBoxArray = document.querySelectorAll(".item-box");
 
-
-
     for (let i = 0; i < itemBoxArray.length; i++) {
         let dropArrItem = {
             id: itemBoxArray[i].id,
-            coords: itemBoxArray[i].getBoundingClientRect()
-        }
+            coords: itemBoxArray[i].getBoundingClientRect(),
+        };
         itemBoxCoords.push(dropArrItem);
-    };
+    }
     return itemBoxCoords;
-};
+}
 
 function checkBoxStatus(itemBoxID, hasClass) {
     let boxToCheck = document.getElementById(itemBoxID);
     if (boxToCheck.classList.contains(hasClass)) {
-
-
-
         return true;
     } else {
         return false;
-    };
-};
+    }
+}
 
 function updatePlayerLocation() {
     let dropper = document.getElementById(dropperID);
-};
+}
 
 function zoneChecker(dropperID, itemBoxCoords) {
     // TODO: export this function:
@@ -714,46 +661,43 @@ function zoneChecker(dropperID, itemBoxCoords) {
     let dropperRect = dropper.getBoundingClientRect();
 
     for (let i = 0; i < itemBoxCoords.length; i++) {
-
         let dropArrItem = itemBoxCoords[i];
         let boxToCheck = document.getElementById(dropArrItem.id);
 
-
         // collision detection:
-        if (parseInt(dropArrItem.coords.left) < Math.round(dropperRect.right) &&
+        if (
+            parseInt(dropArrItem.coords.left) < Math.round(dropperRect.right) &&
             parseInt(dropArrItem.coords.right) > Math.round(dropperRect.left) &&
             parseInt(dropArrItem.coords.top) < Math.round(dropperRect.bottom) &&
-            parseInt(dropArrItem.coords.bottom) > Math.round(dropperRect.top)) {
-
+            parseInt(dropArrItem.coords.bottom) > Math.round(dropperRect.top)
+        ) {
             if (boxToCheck.classList.contains("invisible")) {
                 return {
                     active: true,
                     bombID: "",
                     bombLoc: boxToCheck.id,
-                    drop: false
+                    drop: false,
                 };
-
             } else if (boxToCheck.classList.contains("random-drop")) {
                 return {
                     active: false,
                     dropID: "",
                     dropLoc: boxToCheck.id,
-                    drop: true
+                    drop: true,
                 };
             } else {
                 return {
                     active: false,
                     bombID: "",
                     bombLoc: "",
-                    drop: false
+                    drop: false,
                 };
-            };
+            }
 
             // save location to respective spot on clock-map (for socket):
-
-        };
-    };
-};
+        }
+    }
+}
 
 function displayStats(string, user) {
     let healthStat = document.getElementById("health-status");
@@ -762,42 +706,33 @@ function displayStats(string, user) {
 
     if (string === "toUser") {
         healthStat.innerText = user.health;
-
     } else if (string === "toOpponent") {
         healthStatOpponent.innerText = user.health;
         // flashDiv.classList.add("pulse-score");
-
     } else {
-
     }
-
-};
+}
 
 function updateStats(user, action) {
-
     if (action === "damage") {
         user.health = user.health - 10;
-
     } else if (action === "heal") {
-
         if (user.health < 100) {
             user.health = user.health + 5;
-        };
-
+        }
     } else {
-
-    };
+    }
 
     // TODO: create funtion updateBombCount();
 
     displayStats("toUser", user);
 
     socket.emit("displayStats", {
-        user: user
+        user: user,
     });
 
     if (user.health <= 0 || opponent.health <= 0) {
         // TODO: emit socket message:
         alert("GAME OVER!");
-    };
-};
+    }
+}

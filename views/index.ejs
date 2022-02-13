@@ -1,91 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <meta name="viewport" content="width=device-width,user-scalable=no"> -->
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Time Bombardeer</title>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script> -->
-    <!-- <link rel="stylesheet" href="style.css"> -->
-    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-
-<body>
-    <div class="main-container">
-        <div class="container" id="game-screen">
-            <div class="world-holder">
-                <div class="clock-parts" id="outer-circle">
-                    <div class="clock-parts" id="main-circle">
-                        <div class="quarter quarter1" id="nav-up">
-                            <div class="arrowNav fa fa-arrow-up"></div>
-                        </div>
-                        <div class="quarter quarter2" id="nav-right">
-                            <div class="arrowNav fa fa-arrow-right"></div>
-                        </div>
-                        <div class="quarter quarter3" id="nav-left">
-                            <div class="arrowNav fa fa-arrow-left"></div>
-                        </div>
-                        <div class="quarter quarter4" id="nav-down">
-                            <div class="arrowNav fa fa-arrow-down"></div>
-                        </div>
-                        <div class="cutout"></div>
-                        <!-- append small-circle(s) here -->
+<div class="main-container">
+    <div class="display-info">
+        Welcome <span>
+            <%- user.name %>
+        </span>
+    </div>
+    <div class="container" id="game-screen">
+        <div class="world-holder">
+            <div class="clock-parts" id="outer-circle">
+                <div class="clock-parts" id="main-circle">
+                    <div class="quarter quarter1" id="nav-up">
+                        <div class="arrowNav fa fa-arrow-up"></div>
                     </div>
-                </div>
-
-                <div id="clock">
-                    <div class="hand hour-hand">
-                        <div class="hours"></div>
+                    <div class="quarter quarter2" id="nav-right">
+                        <div class="arrowNav fa fa-arrow-right"></div>
                     </div>
-                    <div class="hand minute-hand">
-                        <div class="minutes"></div>
+                    <div class="quarter quarter3" id="nav-left">
+                        <div class="arrowNav fa fa-arrow-left"></div>
                     </div>
-                    <div class="hand second-hand">
-                        <div class="seconds"></div>
+                    <div class="quarter quarter4" id="nav-down">
+                        <div class="arrowNav fa fa-arrow-down"></div>
                     </div>
-                </div>
-
-                <div class="spinner move-forward" id="clock-runner">
-                    <div class="bomb-drop" id="dropper-ALT">
-                        <div id="dropper"></div>
-                    </div>
-                </div>
-            </div>
-            <div id="info-bar">
-                <div class="slide-deck">
-                    <div class="stats">HEALTH: <span id="health-status"></span></div>
+                    <div class="cutout"></div>
+                    <!-- append small-circle(s) here -->
                 </div>
             </div>
 
-            <div id="info-bar-opponent">
-                <div class="slide-deck-opponent">
-                    <div class="stats-opponent">ENEMY: <span id="health-status-opponent"></span></div>
+            <div id="clock">
+                <div class="hand hour-hand">
+                    <div class="hours"></div>
+                </div>
+                <div class="hand minute-hand">
+                    <div class="minutes"></div>
+                </div>
+                <div class="hand second-hand">
+                    <div class="seconds"></div>
+                </div>
+            </div>
+
+            <div class="spinner move-forward" id="clock-runner">
+                <div class="bomb-drop" id="dropper-ALT">
+                    <div id="dropper"></div>
                 </div>
             </div>
         </div>
+        <div id="info-bar">
+            <div class="slide-deck">
+                <div class="stats">HEALTH: <span id="health-status"></span></div>
+            </div>
+        </div>
 
-        <div class="button-box">
-            <button type="button" id="add-circles" class="btn btn-lg btn-success">START
-            </button>
-            <!-- <div class="leaf"></div> -->
+        <div id="info-bar-opponent">
+            <div class="slide-deck-opponent">
+                <div class="stats-opponent">ENEMY: <span id="health-status-opponent"></span></div>
+            </div>
         </div>
     </div>
 
+    <div class="button-box">
+        <button type="button" id="add-circles" class="btn btn-lg btn-success">START
+        </button>
+        <!-- <div class="leaf"></div> -->
+    </div>
+</div>
 
-    <!-- <div class="card" id="chat">
+<!-- <div class="card" id="chat">
         <div class="card-header">chat</div>
         <div class="card-body">conversation starts here...</div>
     </div> -->
-    <!-- <script src="./dist/main.js"></script> -->
-    <!-- Socket.IO Javacript -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="assets/js/rotate.js"></script>
-</body>
 
-</html>
+<!-- Socket.IO Javacript -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="assets/js/rotate.js"></script>

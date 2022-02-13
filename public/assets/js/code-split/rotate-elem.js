@@ -7,6 +7,6 @@ module.exports = rotateElem = function (el, speed) {
     if (degrees > 359) {
         degress = 1;
     };
-    document.getElementById("status").innerHTML = "rotate(" + "deg)";
+    document.getElementById("status").innerText = "rotate(" + "deg)";
 
 };

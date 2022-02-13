@@ -1,13 +1,69 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 
+const mongoose = require("mongoose");
+const expressEjsLayout = require("express-ejs-layouts");
+const session = require("express-session");
+const flash = require("connect-flash");
+const passport = require("passport");
+
+require("./config/passport")(passport);
+
 const http = require("http");
-const { join } = require("path");
 const path = require("path");
 
 const socketIO = require("socket.io");
 
-const port = process.env.PORT || 8081;
+const PORT = process.env.PORT;
+
+// ====================== mongoose ======================
+
+mongoose
+    .connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => console.log("connected to database"))
+    .catch((err) => console.log(err));
+// ====================== EJS ======================
+
+app.set("view engine", "ejs");
+app.use(expressEjsLayout);
+
+// config:
+//BodyParser
+app.use(express.urlencoded({ extended: false }));
+
+// ====================== express session ======================
+app.use(
+    session({
+        secret: process.env.SECRET_KEY,
+        resave: false,
+        saveUninitialized: false,
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// ====================== use flash ======================
+
+app.use(flash());
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash("success_msg");
+    res.locals.error_msg = req.flash("error_msg");
+    res.locals.error = req.flash("error");
+    next();
+});
+
+// ====================== Routes ======================
+
+app.use("/", require("./routes/index"));
+app.use("/users", require("./routes/users"));
+
+// ====================== PRE 2022 ======================
+// ====================== ADD TO DB ======================
 
 const roomData = {
     roomCounter: 1, // currently open room. counter increment when two enter room
@@ -48,21 +104,25 @@ const roomData = {
     }
 };
 
-app.set('view engine', 'ejs');
+// ====================== SOCKET IO ======================
 
 const server = http.createServer(app);
 const io = socketIO(server);
 let dropCount = 0;
 let initNum = 0;
 
-app.use(express.static(__dirname + "/public"));
-app.get('/', (req, res) => {
-    res.render('splash');
-});
+app.use(express.static(path.join(__dirname + "/public")));
 
-app.get('/game', (req, res) => {
-    res.render('index');
-});
+
+// app.get('/splash', (req, res) => {
+//     res.render('splash');
+// });
+
+// app.get('/game', (req, res) => {
+//     res.render('index');
+// });
+
+// ====================== SOCKET IO COMMUNICATION ======================
 
 io.on("connection", (socket) => {
     console.log(`A user is connected. Please welcome user: ${socket.id}.`);
@@ -222,10 +282,10 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(port, () => console.log(`Time Bomber app listening on port ${port}!`));
+server.listen(PORT, () => console.log(`Time Bomber app listening on PORT ${PORT}!`));
 
 // const socket = io({
 //     auth: (cb) => {
 //         cb(localStorage.getItem("token"));
 //     }
-// });
+// });  
