@@ -99,8 +99,27 @@ socket.on("addBombNow", (data) => {
     spawnBomb(data.dropCount, data.boxDropID, data.bombClass, data.activeBomb);
 });
 
+socket.on("diffuseBomb", (data) => {
+    console.log("{data}");
+    console.log({ data });
+    explode("remove", data.boxDropID, data.boxDropID);
+});
+
 socket.on("explosion", (data) => {
+    console.log({ data });
     explode(data.status, data.bombID, data.bombLoc);
+});
+
+socket.on("bombTimeout", (data) => {
+    dropCount = data.dropCount;
+    // TODO: subtract from drop count
+
+    // if (data.dropCount > 0) {
+    explode(data.status, data.dropID, data.dropLoc);
+    // };
+    // status:
+    // "upgrade"
+    // "missed"
 });
 
 socket.on("grabDrop", (data) => {
@@ -434,7 +453,7 @@ function startGameFunc() {
     // ==============================================
 
     let value = { key: "ArrowRight", target: { id: "nav-right" } };
-    // console.log(value);
+    console.log(value);
     naviCtrl(value);
 
     infoBar.style.display = "block";
@@ -558,6 +577,9 @@ function explode(status, bombID, bombLoc) {
         } else {
             bombBox.removeChild(elem);
             bombBox.classList.remove("glow");
+
+            bombBox.classList.remove("invisible");
+
             bombBox.classList.remove("boom-box");
             bombBox.classList.add("empty");
         }

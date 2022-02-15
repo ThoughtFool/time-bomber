@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV === "development") {
-    require("dotenv").config();
-}
+// if (process.env.NODE_ENV === "development") {
+require("dotenv").config();
+// }
 
 const express = require("express");
 const app = express();
@@ -141,6 +141,8 @@ io.on("connection", (socket) => {
         io.emit("enterRoom");
     });
 
+    // ====================== Create Room (socket) ======================
+
     socket.on("createRoom", (roomName, cb) => {
         const room = {
             id: uuid(),
@@ -156,6 +158,8 @@ io.on("connection", (socket) => {
         io.emit("createRoom");
     });
 
+    // ====================== Join Room (socket) ======================
+
     socket.on("joinRoom", (data, cb) => {
         const roomNames = [];
         for (const id in rooms) {
@@ -169,6 +173,8 @@ io.on("connection", (socket) => {
 
     // socket.join(`Room: ${roomData.roomCounter}`);
 
+    // ====================== Start Game (socket) ======================
+
     socket.on("startGame", () => {
         io.emit("startGame");
     });
@@ -179,16 +185,50 @@ io.on("connection", (socket) => {
         );
     });
 
+    // ====================== Add Bomb to Game Field (socket) ======================
+    const myBombDrops = [];
+
     socket.on("addBombNow", (data) => {
-        // console.log("data");
-        // console.log(data);
+        console.log("data");
+        console.log(data);
+
+        // ======== Add "inactive" bomb to initiating player =====
         socket.emit("addBombNow", data);
         data.bombClass = "invisible";
         data.activeBomb = "active";
-        // console.log("data-2");
-        // console.log(data);
+
+        console.log("data-2");
+        console.log(data);
+
+        // ======== Add "active" bomb to all other players =====
         socket.broadcast.emit("addBombNow", data);
+
+        myBombDrops.push(data);
+
+        setTimeout(async () => {
+
+            console.log("data.boxDropID");
+            console.log(data.boxDropID);
+            console.log(myBombDrops[0]);
+
+            // EXAMPLE DATA:
+            // bombDropCount: 0,
+            // boxDropID: 'drop-box-4',
+            // bombClass: 'glow',
+            // activeBomb: 'inactive'
+
+            await io.emit("diffuseBomb", data);
+
+        }, 5000);
     });
+
+    // ====================== Diffuse Bomb & Remove (socket) ======================
+
+    socket.on("diffuseBomb", (data) => {
+        socket.emit("diffuseBomb", data);
+    });
+
+    // ====================== Detonate Bomb in Game Field (socket) ======================
 
     socket.on("explosion", (data) => {
         socket.emit("explosion", data);
@@ -198,9 +238,13 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("explosion", data);
     });
 
+    // ====================== Display Player Stats (socket) ======================
+
     socket.on("displayStats", (data) => {
         socket.broadcast.emit("displayStats", data);
     });
+
+    // ====================== Add Random Drop to Game Field (socket) ======================
 
     socket.on("randomDrop", (data) => {
         let dropItemsArr = ["heart", "ghost", "glove"];
@@ -265,6 +309,24 @@ io.on("connection", (socket) => {
     });
 
     // function switchUserInfo ()
+    socket.on("bombTimeout", (data) => {
+        // if (dropCount > 0 && dropCount < 2) {
+        //     dropCount--;
+        //     data.dropCount = dropCount;
+        //     console.log("after");
+        //     console.log(data.dropCount);
+        // };
+
+        if (data.status === "missed") {
+            io.emit("bombTimeout", data);
+        } else {
+            socket.emit("bombTimeout", data); //status = "upgrade"
+
+            // send update to all users except initiator:
+            data.status = "lost";
+            socket.broadcast.emit("bombTimeout", data);
+        }
+    });
 
     socket.on("grabDrop", (data) => {
         // if (dropCount > 0 && dropCount < 2) {
