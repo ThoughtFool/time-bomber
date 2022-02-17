@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV === "development") {
+// if (process.env.NODE_ENV === "development") {
 require("dotenv").config();
-}
+// }
 
 const express = require("express");
 const app = express();
@@ -189,8 +189,8 @@ io.on("connection", (socket) => {
     const myBombDrops = [];
 
     socket.on("addBombNow", (data) => {
-        console.log("data");
-        console.log(data);
+        console.log("data.bombDropCount");
+        console.log(data.bombDropCount);
 
         // ======== Add "inactive" bomb to initiating player =====
         socket.emit("addBombNow", data);
@@ -225,7 +225,12 @@ io.on("connection", (socket) => {
     // ====================== Diffuse Bomb & Remove (socket) ======================
 
     socket.on("diffuseBomb", (data) => {
-        socket.emit("diffuseBomb", data);
+
+        // data.status = "remove and rearm";
+        // socket.emit("diffuseBomb", data);
+
+        data.status = "remove";
+        io.emit("diffuseBomb", data);
     });
 
     // ====================== Detonate Bomb in Game Field (socket) ======================
@@ -233,8 +238,9 @@ io.on("connection", (socket) => {
     socket.on("explosion", (data) => {
         socket.emit("explosion", data);
 
-        // send update to all users except initiator:
-        data.status = "remove";
+        // send update to all users except those that detonated bomb:
+        // data.status = "remove";
+        data.status = "reveal and remove";
         socket.broadcast.emit("explosion", data);
     });
 
@@ -250,10 +256,10 @@ io.on("connection", (socket) => {
         let dropItemsArr = ["heart", "ghost", "glove"];
         // dropCount = data.dropCount;
 
-        console.log("initNum");
-        console.log(initNum);
-        console.log("dropCount");
-        console.log(dropCount);
+        // console.log("initNum");
+        // console.log(initNum);
+        // console.log("dropCount");
+        // console.log(dropCount);
 
         if (initNum >= 1 && initNum % 2 !== 0) {
             randomDrop(data);

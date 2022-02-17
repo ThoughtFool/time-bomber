@@ -102,7 +102,8 @@ socket.on("addBombNow", (data) => {
 socket.on("diffuseBomb", (data) => {
     console.log("{data}");
     console.log({ data });
-    explode("remove", data.boxDropID, data.boxDropID);
+    data.status = "remove";
+    explode(data.status, data.boxDropID, data.boxDropID);
 });
 
 socket.on("explosion", (data) => {
@@ -135,6 +136,8 @@ socket.on("grabDrop", (data) => {
 
 socket.on("displayStats", (data) => {
     displayStats("toOpponent", data.user);
+    console.info("data.user");
+    console.info(data.user);
 });
 
 socket.on("randomDrop", (data) => {
@@ -142,6 +145,7 @@ socket.on("randomDrop", (data) => {
 
     console.log("random drop data, returned from server");
     console.log(data);
+    // console.log(bombCount);
     data.dropCount++;
     dropCount = data.dropCount;
 
@@ -195,7 +199,9 @@ async function naviCtrl(value) {
             await coordChecker("dropper")
         );
 
-        if (boxToDrop.classList.contains("empty")) {
+        if (boxToDrop.classList.contains("empty") && bombDropCount <= 5) {
+            bombDropCount++;
+
             socket.emit("addBombNow", {
                 bombDropCount: bombDropCount,
                 boxDropID: boxToDrop.id,
@@ -210,7 +216,6 @@ async function naviCtrl(value) {
             // save location to respective spot on clock-map (for socket):
             // function mapDrop(dropLocID) {
 
-            bombDropCount++;
         }
 
         // } else if (value.key === "ArrowUp" || value.target.id === "nav-up") {
@@ -471,8 +476,8 @@ function startGameFunc() {
     setInterval(() => {
         let zone = zoneChecker("dropper", itemBoxCoords);
 
-        console.log("zone");
-        console.log(zone);
+        // console.log("zone");
+        // console.log(zone);
 
         if (zone.active) {
             ///////////////////////////////////////////////////////////
@@ -575,6 +580,11 @@ function explode(status, bombID, bombLoc) {
         let elem = bombBox.getElementsByClassName("bomb")[0];
         if (typeof elem !== "object") {
         } else {
+            // checker to add bombs back if !"invisible":
+            if (bombBox.classList.contains("glow")) {
+                bombDropCount--;
+                // TODO: add to database object and call changes in function: bombCount--;
+            }
             bombBox.removeChild(elem);
             bombBox.classList.remove("glow");
 
@@ -582,6 +592,44 @@ function explode(status, bombID, bombLoc) {
 
             bombBox.classList.remove("boom-box");
             bombBox.classList.add("empty");
+        }
+    // } else if (status === "remove and rearm") {
+    //     let elem = bombBox.getElementsByClassName("bomb")[0];
+    //     if (typeof elem !== "object") {
+    //     } else {
+    //         // TODO: add to database object and call changes in function: bombCount--;
+    //         bombDropCount--;
+
+    //         bombBox.removeChild(elem);
+    //         bombBox.classList.remove("glow");
+
+    //         bombBox.classList.remove("invisible");
+
+    //         bombBox.classList.remove("boom-box");
+    //         bombBox.classList.add("empty");
+    //     }
+    } else if (status === "reveal and remove") {
+        let elem = bombBox.getElementsByClassName("bomb")[0];
+        if (typeof elem !== "object") {
+        } else {
+            // TODO: use instead of "kaboom":
+            bombBox.classList.add("reveal-enemy");
+            // bombBox.classList.add("kaboom");
+            
+            setTimeout(function () {
+                if (bombDropCount > 0) bombDropCount--;
+                
+                bombBox.removeChild(elem);
+                bombBox.classList.remove("glow");
+                // TODO: use instead of "kaboom":
+                bombBox.classList.remove("reveal-enemy");
+                // bombBox.classList.remove("kaboom");
+
+                bombBox.classList.remove("invisible");
+
+                bombBox.classList.remove("boom-box");
+                bombBox.classList.add("empty");
+            }, 500);
         }
     } else if (status === "upgrade") {
         let elem = bombBox.getElementsByClassName("rand-drop")[0];
@@ -647,7 +695,7 @@ function explode(status, bombID, bombLoc) {
             });
         }
     } else {
-        alert("issue found");
+        alert(`issue found, status: ${status}`);
     }
 }
 
@@ -755,6 +803,7 @@ function updateStats(user, action) {
 
     if (user.health <= 0 || opponent.health <= 0) {
         // TODO: emit socket message:
+        // TODO: create modal and offer another game:
         alert("GAME OVER!");
     }
 }
