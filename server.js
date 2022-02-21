@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV === "development") {
+// if (process.env.NODE_ENV === "development") {
 require("dotenv").config();
-}
+// }
 
 const express = require("express");
 const app = express();
@@ -68,6 +68,7 @@ app.use("/users", require("./routes/users"));
 // ====================== PRE 2022 ======================
 // ====================== ADD TO DB ======================
 
+// TODO: store data to be repopulated upon disconnect or refresh:
 const roomData = {
     roomCounter: 1, // currently open room. counter increment when two enter room
     rooms: [
@@ -126,20 +127,41 @@ app.use(express.static(path.join(__dirname + "/public")));
 // });
 
 // ====================== SOCKET IO COMMUNICATION ======================
+// TODO: use mongoose:
+let clients = [];
 
 io.on("connection", (socket) => {
+    // socket.on("join server", (username) => {
+    //     const newUser = {
+    //         username,
+    //         id: socket.id,
+    //     };
+    //     socketUsers.push(newUser);
+    // } );
+
     console.log(`A user is connected. Please welcome user: ${socket.id}.`);
 
-    socket.on("enterRoom", () => {
-        const roomNames = [];
-        for (const id in rooms) {
-            const { name } = rooms[id];
-            const room = { name, id };
-            roomNames.push(room);
-        }
-        cb(roomNames);
-        io.emit("enterRoom");
+    socket.on("saveClientInfo", (data) => {
+        var clientInfo = new Object();
+        console.log(data);
+        clientInfo.customId = data.userGameID;
+        clientInfo.clientId = socket.id;
+        clients.push(clientInfo);
+        console.log(clients);
     });
+
+    // socket.emit("connecting", {id: socket.id});
+
+    // socket.on("enterRoom", () => {
+    //     const roomNames = [];
+    //     for (const id in rooms) {
+    //         const { name } = rooms[id];
+    //         const room = { name, id };
+    //         roomNames.push(room);
+    //     }
+    //     cb(roomNames);
+    //     io.emit("enterRoom");
+    // });
 
     // ====================== Create Room (socket) ======================
 
@@ -160,16 +182,16 @@ io.on("connection", (socket) => {
 
     // ====================== Join Room (socket) ======================
 
-    socket.on("joinRoom", (data, cb) => {
-        const roomNames = [];
-        for (const id in rooms) {
-            const { name } = rooms[id];
-            const room = { name, id };
-            roomNames.push(room);
-        }
-        cb(roomNames);
-        io.emit("joinRoom");
-    });
+    // socket.on("joinRoom", (data, cb) => {
+    //     const roomNames = [];
+    //     for (const id in rooms) {
+    //         const { name } = rooms[id];
+    //         const room = { name, id };
+    //         roomNames.push(room);
+    //     }
+    //     cb(roomNames);
+    //     io.emit("joinRoom");
+    // });
 
     // socket.join(`Room: ${roomData.roomCounter}`);
 
@@ -206,7 +228,6 @@ io.on("connection", (socket) => {
         myBombDrops.push(data);
 
         setTimeout(async () => {
-
             console.log("data.boxDropID");
             console.log(data.boxDropID);
             console.log(myBombDrops[0]);
@@ -218,14 +239,12 @@ io.on("connection", (socket) => {
             // activeBomb: 'inactive'
 
             await io.emit("diffuseBomb", data);
-
         }, 5000);
     });
 
     // ====================== Diffuse Bomb & Remove (socket) ======================
 
     socket.on("diffuseBomb", (data) => {
-
         // data.status = "remove and rearm";
         // socket.emit("diffuseBomb", data);
 
@@ -351,6 +370,10 @@ io.on("connection", (socket) => {
             data.status = "lost";
             socket.broadcast.emit("grabDrop", data);
         }
+    });
+
+    socket.on("game over", () => {
+        io.emit("game over");
     });
 });
 

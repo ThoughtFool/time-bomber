@@ -1,6 +1,6 @@
 <div class="main-container">
     <div class="display-info">
-        Welcome <span>
+        Welcome <span id="username-span" data-username=<%- user.name %>>
             <%- user.name %>
         </span>
     </div>
@@ -62,6 +62,9 @@
         <!-- <div class="leaf"></div> -->
     </div>
 </div>
+
+            <%- include ('./partials/modal') %>
+
 
 <!-- <div class="card" id="chat">
         <div class="card-header">chat</div>

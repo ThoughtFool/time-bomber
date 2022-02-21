@@ -31,6 +31,22 @@ let zone = {
     drop: false,
 };
 
+let usernameSpan = document.getElementById("username-span");
+let username = usernameSpan.getAttribute("data-username");
+
+socket.on("connect", () => {
+    localStorage.setItem("username", username);
+    let idString = Date.now().toString();
+    socket.emit("saveClientInfo", {
+        username,
+        userGameID: idString,
+    });
+});
+
+socket.on("disconnect", () => {
+    localStorage.setItem("username", "");
+});
+
 // // global test vars:
 // bodyRectLeft = 0;
 // containerRectLeft = 0;
@@ -215,7 +231,6 @@ async function naviCtrl(value) {
             //////////////////////////////////////////////////////
             // save location to respective spot on clock-map (for socket):
             // function mapDrop(dropLocID) {
-
         }
 
         // } else if (value.key === "ArrowUp" || value.target.id === "nav-up") {
@@ -444,6 +459,7 @@ const infoBarOpponent = document.getElementById("info-bar-opponent");
 const slideDeck = document.querySelector(".slide-deck");
 
 addCirclesBtn.addEventListener("click", startGameFunc);
+let zoneInterval;
 
 function startGameFunc() {
     // addCirclesBtn.addEventListener("click", () => {
@@ -473,7 +489,7 @@ function startGameFunc() {
     });
 
     // TODO: testing event loop:
-    setInterval(() => {
+    zoneInterval = setInterval(() => {
         let zone = zoneChecker("dropper", itemBoxCoords);
 
         // console.log("zone");
@@ -593,21 +609,21 @@ function explode(status, bombID, bombLoc) {
             bombBox.classList.remove("boom-box");
             bombBox.classList.add("empty");
         }
-    // } else if (status === "remove and rearm") {
-    //     let elem = bombBox.getElementsByClassName("bomb")[0];
-    //     if (typeof elem !== "object") {
-    //     } else {
-    //         // TODO: add to database object and call changes in function: bombCount--;
-    //         bombDropCount--;
+        // } else if (status === "remove and rearm") {
+        //     let elem = bombBox.getElementsByClassName("bomb")[0];
+        //     if (typeof elem !== "object") {
+        //     } else {
+        //         // TODO: add to database object and call changes in function: bombCount--;
+        //         bombDropCount--;
 
-    //         bombBox.removeChild(elem);
-    //         bombBox.classList.remove("glow");
+        //         bombBox.removeChild(elem);
+        //         bombBox.classList.remove("glow");
 
-    //         bombBox.classList.remove("invisible");
+        //         bombBox.classList.remove("invisible");
 
-    //         bombBox.classList.remove("boom-box");
-    //         bombBox.classList.add("empty");
-    //     }
+        //         bombBox.classList.remove("boom-box");
+        //         bombBox.classList.add("empty");
+        //     }
     } else if (status === "reveal and remove") {
         let elem = bombBox.getElementsByClassName("bomb")[0];
         if (typeof elem !== "object") {
@@ -615,10 +631,10 @@ function explode(status, bombID, bombLoc) {
             // TODO: use instead of "kaboom":
             bombBox.classList.add("reveal-enemy");
             // bombBox.classList.add("kaboom");
-            
+
             setTimeout(function () {
                 if (bombDropCount > 0) bombDropCount--;
-                
+
                 bombBox.removeChild(elem);
                 bombBox.classList.remove("glow");
                 // TODO: use instead of "kaboom":
@@ -804,6 +820,44 @@ function updateStats(user, action) {
     if (user.health <= 0 || opponent.health <= 0) {
         // TODO: emit socket message:
         // TODO: create modal and offer another game:
-        alert("GAME OVER!");
+        // alert("GAME OVER!");
+        socket.emit("game over");
     }
 }
+
+socket.on("game over", () => {
+    gameOverModal();
+});
+
+// Modal placeholder:
+
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+function gameOverModal() {
+    clearInterval(zoneInterval);
+    document.removeEventListener("touchstart", naviCtrl, false);
+
+    document.removeEventListener("keydown", naviCtrl, false);
+
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function () {
+    modal.style.display = "none";
+};
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+};
