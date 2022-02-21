@@ -982,3 +982,20 @@ body {
   text-decoration: none;
   cursor: pointer;
 }
+
+/* random image filters */
+.saturate {
+  filter: saturate(3);
+}
+
+.invert {
+  filter: invert(90%);
+}
+
+.sepia {
+  filter: sepia(70%);
+}
+
+.huerotate {
+  filter: hue-rotate(180deg);
+}

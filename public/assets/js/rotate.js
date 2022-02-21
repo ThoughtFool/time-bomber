@@ -1,5 +1,13 @@
 let socket = io();
 var hazRunner = document.getElementById("clock-runner");
+
+// Create a random filter class for hazRunner:
+const filterArr = ["invert", "huerotate", "saturate", "sepia", "original"];
+let randomIndex = Math.floor(Math.random() * filterArr.length);
+let randomFilter = filterArr[randomIndex];
+
+hazRunner.classList.add(randomFilter);
+
 // var dropDiv = document.getElementById("dropper");
 var container = document.querySelector(".container");
 // var container = document.getElementById("game-screen");
