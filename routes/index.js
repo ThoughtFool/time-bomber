@@ -13,10 +13,11 @@ router.get("/register", (req, res) => {
 });
 
 // ====================== waiting-room page ======================
-// router.get("/waiting-room", (req, res) => {
-//     res.render("waiting-room");
-// });
-
+router.get("/game-lounge", ensureAuthenticated, (req, res) => {
+    res.render("game-lounge", {
+        user: req.user,
+    });
+});
 
 // router.get("/dashboard", ensureAuthenticated, (req, res) => {
 //     res.render("dashboard", {
@@ -33,9 +34,13 @@ router.get("/splash", ensureAuthenticated, (req, res) => {
     });
 });
 
+router.post("/game/:roomId", ensureAuthenticated, (req, res) => {
+    console.log(req.params.roomId);
+});
+
 router.get("/game", ensureAuthenticated, (req, res) => {
     res.render("index", {
-        user: req.user
+        user: req.user,
     });
 });
 

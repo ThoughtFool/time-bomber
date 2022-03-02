@@ -51,6 +51,8 @@ socket.on("connect", () => {
     });
 });
 
+// socket.on("sendMsg", (data) => console.log(data));
+
 socket.on("disconnect", () => {
     localStorage.setItem("username", "");
 });

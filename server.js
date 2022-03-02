@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV === "development") {
+// if (process.env.NODE_ENV === "development") {
 require("dotenv").config();
-}
+// }
 
 const express = require("express");
 const app = express();
@@ -19,6 +19,12 @@ const path = require("path");
 const socketIO = require("socket.io");
 
 const PORT = process.env.PORT;
+
+const {
+    joinWaitList,
+    activeRoomsObject,
+    addPlayerToRoom,
+} = require("./room-logic/index");
 
 // ====================== mongoose ======================
 
@@ -64,6 +70,7 @@ app.use((req, res, next) => {
 
 app.use("/", require("./routes/index"));
 app.use("/users", require("./routes/users"));
+app.use("/rooms", require("./routes/rooms"));
 
 // ====================== PRE 2022 ======================
 // ====================== ADD TO DB ======================
@@ -140,6 +147,35 @@ io.on("connection", (socket) => {
     // } );
 
     console.log(`A user is connected. Please welcome user: ${socket.id}.`);
+
+    // save player info to socket:
+
+    // socket.username = username;
+    socket.roomName = "lounge";
+    socket.join(socket.roomName);
+    // socket.to(socket.roomName).emit(
+    //     "sendMsg",
+    //     "server",
+    //     `You are connected to room: ${socket.roomName}`
+    // );
+
+    socket.on("join wait list", async (obj) => {
+        console.log(obj.username);
+        console.log(activeRoomsObject);
+
+        let ready = await joinWaitList(obj.username);
+        console.log(activeRoomsObject.getRoomCount("lounge"));
+        if (!ready) {
+            return;
+        } else {
+            alertPlayers(ready);
+        }
+    });
+
+    socket.on("add player to lounge", (data) => {
+        console.log("received msg: add player to lounge");
+        addPlayerToRoom("lounge", data.username);
+    });
 
     socket.on("saveClientInfo", (data) => {
         var clientInfo = new Object();
@@ -372,6 +408,18 @@ io.on("connection", (socket) => {
         }
     });
 
+    function alertPlayers({nextRoomName}) {
+        socket.emit("wait is over", {
+            players: activeRoomsObject[nextRoomName].playerListArray,
+            nextRoomName: nextRoomName,
+        });
+
+        socket.broadcast.emit("wait is over", {
+            players: activeRoomsObject[nextRoomName].playerListArray,
+            nextRoomName: nextRoomName,
+        });
+    }
+
     socket.on("game over", () => {
         io.emit("game over");
     });
@@ -386,3 +434,5 @@ server.listen(PORT, () =>
 //         cb(localStorage.getItem("token"));
 //     }
 // });
+
+
