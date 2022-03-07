@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV === "development") {
+// if (process.env.NODE_ENV === "development") {
 require("dotenv").config();
-}
+// }
 
 const express = require("express");
 const app = express();
@@ -25,6 +25,7 @@ const botName = "Boom-Bot";
 const formatMsg = require("./utils/messages");
 const {
     joinWaitList,
+    removeWaitList,
     activeRoomsObject,
     addPlayerToRoom,
 } = require("./room-logic/index");
@@ -170,6 +171,8 @@ io.on("connection", (socket) => {
     //     `You are connected to room: ${socket.room}`
     // );
 
+    // ====================== Join wait list (socket) ======================
+
     socket.on("join wait list", async (obj) => {
         console.log(obj.username);
         console.log(activeRoomsObject);
@@ -177,11 +180,29 @@ io.on("connection", (socket) => {
         let ready = await joinWaitList(obj.username);
         console.log(activeRoomsObject.getRoomCount("lounge"));
         if (!ready) {
-            socket.emit("waiting for other players", {loungeCount: activeRoomsObject.getRoomCount("lounge")});
+            socket.emit("waiting for other players", {
+                loungeCount: activeRoomsObject.getRoomCount("lounge"),
+            });
             return;
         } else {
             alertPlayers(ready);
         }
+    });
+
+    // ====================== Remove wait list (socket) ======================
+
+    socket.on("remove from wait list", async (obj) => {
+        console.log(obj.username);
+        console.log(activeRoomsObject);
+
+        let ready = await removeWaitList(obj.username);
+        console.log(activeRoomsObject.getRoomCount("lounge"));
+        if (!ready) {
+            socket.emit("waiting for other players", {
+                loungeCount: activeRoomsObject.getRoomCount("lounge"),
+            });
+            return;
+        } 
     });
 
     // ====================== Welcome to Lounge (socket) ======================
@@ -290,14 +311,20 @@ io.on("connection", (socket) => {
         const user = getCurrentUser(socket.id);
 
         // console.log(msg);
-        io.to(user.room).emit("message", formatMsg(user.username, msg));
+        // io.to(user.room).emit("message", formatMsg(user.username, msg));
+        socket.emit("message", formatMsg("me", msg));
+        socket.broadcast
+            .to(user.room)
+            .emit("message", formatMsg(user.username, msg));
     });
 
     // ====================== Start Game (socket) ======================
 
     socket.on("startGame", () => {
-        io.emit("startGame");
+        socket.emit("startGame");
     });
+
+    // ====================== Disconnect (socket) ======================
 
     socket.on("disconnect", () => {
         console.log(
@@ -315,7 +342,8 @@ io.on("connection", (socket) => {
                 )
             );
 
-            // Remove users and room info from sidebar:
+            // ====================== Remove users and room info from sidebar ======================
+
             io.to(user.room).emit("roomUsers", {
                 room: user.room,
                 users: getRoomUsers(user.room),
@@ -324,13 +352,14 @@ io.on("connection", (socket) => {
     });
 
     // ====================== Add Bomb to Game Field (socket) ======================
+
     const myBombDrops = [];
 
     socket.on("addBombNow", (data) => {
         console.log("data.bombDropCount");
         console.log(data.bombDropCount);
 
-        // ======== Add "inactive" bomb to initiating player =====
+        // ====================== Add "inactive" bomb to initiating player ======================
         socket.emit("addBombNow", data);
         data.bombClass = "invisible";
         data.activeBomb = "active";
@@ -338,7 +367,7 @@ io.on("connection", (socket) => {
         console.log("data-2");
         console.log(data);
 
-        // ======== Add "active" bomb to all other players =====
+        // ====================== Add "active" bomb to all other players ======================
         socket.broadcast.emit("addBombNow", data);
 
         myBombDrops.push(data);

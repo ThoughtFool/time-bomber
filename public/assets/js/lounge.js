@@ -94,7 +94,8 @@ let countdownInterval;
 // ====================== Function to Start Game for Waitlist Players ======================
 
 function startGameFuncTest() {
-    alert("player has left waitlist");
+    // alert("player has left waitlist");
+    socket.emit("startGame", { username });
 }
 
 // ====================== Function to Set Interval and Timeout ======================
@@ -183,12 +184,24 @@ chatForm.addEventListener("submit", (event) => {
 
 // Output message to DOM:
 function outputMsg(message) {
+    let newClass = "msg-other";
     const newDiv = document.createElement("div");
     newDiv.classList.add("message");
+
+    if (message.username === "me") {
+        newClass = "msg-self"
+    }
+
+    if (message.username === "Boom-Bot") {
+        newClass = "msg-bot";
+    }
+
     newDiv.innerHTML = `<p class="meta">${message.username} <span>${message.time}</span></p>
     <p class="text">
         ${message.text}
     </p>`;
+
+    newDiv.classList.add(`${newClass}`);
     chatDiv.appendChild(newDiv);
 }
 

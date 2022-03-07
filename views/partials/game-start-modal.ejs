@@ -1,21 +1,27 @@
 <!-- Modal -->
-<div id="myModal" class="modal hidden">
+<div id="myModal" class="modal">
 
     <!-- Modal content -->
     <div class="modal-content-lounge">
         <div class="close-modal">
             <span class="center">&times;</span>
         </div>
-        <div>
+        <div class="modal-body">
             <p class="text-background">
-            <h1>Your Wait is Over!</h1>
+            <h1>Your Wait is Almost Over!</h1>
             </p>
             <!-- TODO: combine all modals and make reusable with different messages displayed -->
             <div>Ready? Time left to join: <span id="timer">10</span></div>
         </div>
 
+        <div class="button-row">
+            <!-- TODO: Add functions to alert players -->
+            <div class="modal-btn confirm-btn"><a class="btn" href="/game"><span>CONFIRM</span></a></div>
+            <div class="modal-btn divider"></div>
+            <div class="modal-btn cancel-btn"><a class="btn" href="/game-lounge"><span>CANCEL</span></a></div>
+        </div>
+
         <!-- <div>
-            <a class="enter-btn glow" href="/game"><span>ENTER</span></a>
         </div> -->
     </div>
 

@@ -836,7 +836,8 @@ body {
   align-self: center;
   justify-content: center;
   width: auto;
-  font-size: 2vw;
+  font-size: 2rem;
+  /* font-size: 2vw; */
   color: aliceblue;
 }
 

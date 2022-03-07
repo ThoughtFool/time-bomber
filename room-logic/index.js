@@ -1,5 +1,6 @@
 module.exports = {
     joinWaitList: require("./join-wait-list"),
+    removeWaitList: require("./remove-wait-list"),
     switchRooms: require("./switch-rooms"),
     removePlayerFromRoom: require("./remove-player-from-room"),
     addPlayerToRoom: require("./add-player-to-room"),

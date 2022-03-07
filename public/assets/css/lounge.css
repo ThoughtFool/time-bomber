@@ -3,7 +3,9 @@
 :root {
     --dark-color-a: #36147e;
     --dark-color-b: #8c07c0;
-    --light-color: #31c3e7c0;
+    --light-color: #29aaddc0;
+    --lighter-color: #b377d3c0;
+    --gray-color: #7d7dddc4;
     --success-color: #5cb85c;
     --error-color: #d9534f;
 }
@@ -115,7 +117,7 @@ a {
 .chat-messages .message {
     padding: 10px;
     margin-bottom: 15px;
-    background-color: var(--light-color);
+    /* background-color: var(--light-color); */
     border-radius: 5px;
 }
 
@@ -266,6 +268,7 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
@@ -314,3 +317,43 @@ a {
 #add-me-to-wait-list {
     display: block;
 }
+
+.msg-self {
+    background-color: var(--light-color);
+}
+
+.msg-other {
+    background-color: var(--lighter-color);
+}
+
+.msg-bot {
+    background-color: var(--gray-color);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 60%;
+}
+
+.button-row {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    width: 100%;
+    justify-content: space-between;
+    align-content: center;
+    align-items: flex-end;
+}
+
+.modal-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+}
+
+/* .confirm-btn {
+} */
