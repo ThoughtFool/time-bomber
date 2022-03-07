@@ -311,7 +311,7 @@ io.on("connection", (socket) => {
                 "message",
                 formatMsg(
                     botName,
-                    `One less fox is in the hen house. ${user.username} has left the chat.`
+                    `One less player is in the game lounge. ${user.username} has left the chat.`
                 )
             );
 
