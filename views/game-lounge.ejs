@@ -3,12 +3,12 @@
         integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
     <link rel="stylesheet" href="../assets/css/lounge.css">
 </head>
-<div class="container center">
+<div class="lounge-container center">
 
     <div class="chat-container center">
         <header class="chat-header">
             <h1><i class="fas fa-coffee"></i> Game Lounge</h1>
-            <a href="/login" class="btn"><i class="fas fa-door-open"></i> Leave Room</a>
+            <a href="/users/login" class="btn"><i class="fas fa-door-open"></i> Leave Room</a>
         </header>
 
         <main class="chat-main">
@@ -22,12 +22,14 @@
                 <br>
                 <div>
                     <button id="add-me-to-wait-list" class="btn"><i class="fas fa-list"></i> Join Wait List</button>
+                    <button id="remove-me-from-wait-list" class="btn"><i class="fas fa-close"></i> Cancel Wait List</button>
+                    <span id="wait-listed"></span>
                 </div>
                 <br>
                 <h3><i class="fas fa-comments"></i> Room Name: <%- user.roomName %>
                 </h3>
                 <h2 id="room-name"></h2>
-                <h3><i class="fas fa-users"></i> Users</h3>
+                <h3><i class="fas fa-users"></i> Players</h3>
                 <ul id="users"></ul>
             </div>
             <div class="chat-messages"></div>
@@ -42,9 +44,8 @@
     </div>
 </div>
 
-            <%- include ('./partials/game-start-modal') %>
-
-
-<!-- Socket.IO Javacript -->
-<script src="/socket.io/socket.io.js"></script>
-<script src="assets/js/lounge.js"></script>
+<%- include ('./partials/game-start-modal') %>
+    
+    <!-- Socket.IO Javacript -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="assets/js/lounge.js"></script>

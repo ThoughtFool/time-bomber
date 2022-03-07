@@ -20,11 +20,21 @@ const socketIO = require("socket.io");
 
 const PORT = process.env.PORT;
 
+const botName = "Boom-Bot";
+
+const formatMsg = require("./utils/messages");
 const {
     joinWaitList,
     activeRoomsObject,
     addPlayerToRoom,
 } = require("./room-logic/index");
+
+const {
+    userJoin,
+    getCurrentUser,
+    userLeaves,
+    getRoomUsers,
+} = require("./utils/users");
 
 // ====================== mongoose ======================
 
@@ -151,12 +161,13 @@ io.on("connection", (socket) => {
     // save player info to socket:
 
     // socket.username = username;
-    socket.roomName = "lounge";
-    socket.join(socket.roomName);
-    // socket.to(socket.roomName).emit(
+    socket.room = "lounge";
+    socket.join(socket.room);
+
+    // socket.to(socket.room).emit(
     //     "sendMsg",
     //     "server",
-    //     `You are connected to room: ${socket.roomName}`
+    //     `You are connected to room: ${socket.room}`
     // );
 
     socket.on("join wait list", async (obj) => {
@@ -166,14 +177,56 @@ io.on("connection", (socket) => {
         let ready = await joinWaitList(obj.username);
         console.log(activeRoomsObject.getRoomCount("lounge"));
         if (!ready) {
+            socket.emit("waiting for other players", {loungeCount: activeRoomsObject.getRoomCount("lounge")});
             return;
         } else {
             alertPlayers(ready);
         }
     });
 
+    // ====================== Welcome to Lounge (socket) ======================
+
     socket.on("add player to lounge", (data) => {
         console.log("received msg: add player to lounge");
+
+        const user = userJoin(socket.id, data.username, data.room);
+
+        // Join to room:
+        socket.join(user.room);
+
+        console.log("=============");
+        console.log(data.room);
+        console.log(user.room);
+        console.log("=============");
+
+        // Welcome current user/clent:
+        socket.emit(
+            "message",
+            formatMsg(
+                botName,
+                `Hey ${user.username}, welcome to the Time Bomber: Game Lounge.`
+            )
+        );
+
+        // Broadcast when users/clents connect (to everyone except current user/client):
+        socket.broadcast
+            .to(user.room)
+            .emit(
+                "message",
+                formatMsg(
+                    botName,
+                    `There's another player in the Game Lounge! ${user.username} has joined the chat.`
+                )
+            );
+        // (to everyone including current client):
+        // io.emit();
+
+        // Send users and room info to sidebar:
+        io.to(user.room).emit("roomUsers", {
+            room: user.room,
+            users: getRoomUsers(user.room),
+        });
+
         addPlayerToRoom("lounge", data.username);
     });
 
@@ -201,16 +254,16 @@ io.on("connection", (socket) => {
 
     // ====================== Create Room (socket) ======================
 
-    socket.on("createRoom", (roomName, cb) => {
-        const room = {
+    socket.on("createRoom", (room, cb) => {
+        const roomName = {
             id: uuid(),
-            name: roomName,
+            name: room,
             sockets: [],
         };
         rooms[room.id] = room;
 
         // socket joins the new room:
-        joinRoom(socket, room);
+        joinRoom(socket, roomName);
         cb();
 
         io.emit("createRoom");
@@ -231,6 +284,15 @@ io.on("connection", (socket) => {
 
     // socket.join(`Room: ${roomData.roomCounter}`);
 
+    // ====================== Listen for chatMessage ======================
+
+    socket.on("chatMessage", (msg) => {
+        const user = getCurrentUser(socket.id);
+
+        // console.log(msg);
+        io.to(user.room).emit("message", formatMsg(user.username, msg));
+    });
+
     // ====================== Start Game (socket) ======================
 
     socket.on("startGame", () => {
@@ -241,6 +303,24 @@ io.on("connection", (socket) => {
         console.log(
             `A user has disconnected. Please come back soon, user: ${socket.id}.`
         );
+
+        const user = userLeaves(socket.id);
+
+        if (user) {
+            io.to(user.room).emit(
+                "message",
+                formatMsg(
+                    botName,
+                    `One less fox is in the hen house. ${user.username} has left the chat.`
+                )
+            );
+
+            // Remove users and room info from sidebar:
+            io.to(user.room).emit("roomUsers", {
+                room: user.room,
+                users: getRoomUsers(user.room),
+            });
+        }
     });
 
     // ====================== Add Bomb to Game Field (socket) ======================
@@ -408,7 +488,7 @@ io.on("connection", (socket) => {
         }
     });
 
-    function alertPlayers({nextRoomName}) {
+    function alertPlayers({ nextRoomName }) {
         socket.emit("wait is over", {
             players: activeRoomsObject[nextRoomName].playerListArray,
             nextRoomName: nextRoomName,
@@ -434,5 +514,3 @@ server.listen(PORT, () =>
 //         cb(localStorage.getItem("token"));
 //     }
 // });
-
-

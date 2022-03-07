@@ -29,7 +29,7 @@ body {
     padding: 10px;
 }
 
-.container {
+.lounge-container {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -208,4 +208,109 @@ a {
     .chat-sidebar {
         display: none;
     }
+}
+
+.toast-minimize-btn {
+    border-radius: 0px 10px 10px 0px;
+    background-color: red;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.toast-panel {
+    padding: 30px;
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+    border-top: 1px solid;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* overflow-y: scroll; */
+    width: 350px;
+}
+
+.toast-card {
+    margin: 25px;
+    height: 75px;
+    width: 300px;
+    position: relative;
+    display: flex;
+    background-color: rgba(205, 197, 206, 0.835);
+    border: 3px solid gray;
+    border-left: 5px solid #8c07c0c4;
+}
+
+
+#myModal {
+    position: absolute;
+    z-index: 50;
+    font-size: x-large;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+.modal-content-lounge {
+    border-radius: 15px;
+    background-color: #fefefeb2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    height: 60%;
+    font-size: large;
+}
+
+/* The Close Button */
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#wait-listed {
+    color: #65f009;
+    animation: text-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes text-glow {
+    from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #65f009, 0 0 40px #65f009, 0 0 50px #65f009, 0 0 60px #65f009, 0 0 70px #65f009;
+    }
+
+    to {
+        text-shadow: 0 0 20px #fff, 0 0 30px var(--dark-color-b), 0 0 40px var(--dark-color-b), 0 0 50px var(--dark-color-b), 0 0 60px var(--dark-color-b), 0 0 70px var(--dark-color-b), 0 0 80px var(--dark-color-b);
+    }
+}
+
+#remove-me-from-wait-list {
+    display: none;
+}
+
+#add-me-to-wait-list {
+    display: block;
 }

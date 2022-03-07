@@ -1,0 +1,26 @@
+<!-- toast -->
+<div id="toast-card">
+    
+    <div class="toast-header"><%- toast.title %></div>
+
+    <!-- toast content -->
+    <div class="toast-content">
+        <span class="close"><%- toast.body %></span>
+        <p class="text-background">
+        <h1>Game Over!</h1>
+        </p>
+        <!-- TODO: add usernames, winner, and option to play again -->
+    </div>
+    <div class="toast-footer">
+        <%- toast.footer %>
+    </div>
+
+
+</div>
+
+<%- include ('./partials/game-start-modal') %>
+    <div class="toast-panel">
+        <div class="toast-minimize-btn">X</div>
+        <%- include ('./partials/toast-message', {toast: {title: "I Am the Title" , body: "This is the body." , footer:
+            Date.now().toString()}}) %>
+    </div>
