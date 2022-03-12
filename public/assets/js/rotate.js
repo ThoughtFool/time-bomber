@@ -469,6 +469,8 @@ const infoBarOpponent = document.getElementById("info-bar-opponent");
 const slideDeck = document.querySelector(".slide-deck");
 
 addCirclesBtn.addEventListener("click", startGameFunc);
+addCirclesBtn.style.display = "none";
+
 let zoneInterval;
 
 function startGameFunc() {
@@ -871,3 +873,6 @@ window.onclick = function (event) {
         modal.style.display = "none";
     }
 };
+
+// TODO: remove startButton:
+startGameFunc();
