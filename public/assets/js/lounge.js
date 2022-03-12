@@ -8,12 +8,36 @@ const roomName = document.getElementById("room-name");
 const userList = document.getElementById("users");
 const waitListed = document.getElementById("wait-listed");
 const cancelWaitListBtn = document.getElementById("remove-me-from-wait-list");
+const confirmBtn = document.getElementById("confirm-btn");
+const cancelBtn = document.getElementById("cancel-btn");
+
+// ===================================================================
+
+let myResponse = {
+    username,
+    confirmation: null,
+    socketId: null,
+    // room
+};
+
+function pushResponse(e) {
+    let response = e.target.dataset["response"];
+    console.log({ response });
+
+    myResponse.confirmation = response;
+
+    console.log(myResponse);
+}
+
+// ===================================================================
 
 socket.on("connect", () => {
     localStorage.setItem("username", username);
     let idString = Date.now().toString();
     socket.userGameID = idString;
     socket.username = username;
+    myResponse.socketId = socket.id;
+    console.log({ myResponse });
 
     console.log("client connected");
 
@@ -36,17 +60,31 @@ socket.on("disconnect", () => {
 const waitListBtn = document.getElementById("add-me-to-wait-list");
 // console.log(waitListBtn);
 waitListBtn.addEventListener("click", addMeToWaitList);
-cancelWaitListBtn.addEventListener("click", removeMeFromWaitList);;
+cancelWaitListBtn.addEventListener("click", removeMeFromWaitList);
 
 function addMeToWaitList() {
     console.log("click event fires!");
     socket.emit("join wait list", { username });
-};
+}
 
 function removeMeFromWaitList() {
     console.log("click event fires!");
     socket.emit("remove from wait list", { username });
-};
+}
+
+function toggleWaitListBtn(bool) {
+    if (bool) {
+        waitListBtn.style.display = "none";
+        cancelWaitListBtn.style.display = "block";
+        waitListed.innerText = "waiting for opponent...";
+    } else {
+        waitListBtn.style.display = "block";
+        cancelWaitListBtn.style.display = "none";
+        waitListed.innerText = "";
+    }
+}
+
+socket.on("remove wait list button", () => toggleWaitListBtn(false));
 
 console.log("hello, world!");
 
@@ -55,16 +93,28 @@ console.log("hello, world!");
 // socket.to("lounge").emit("join lounge", { username });
 
 socket.on("wait is over", () => {
-    waitListed.innerText = "";
-    waitIsOverModal();
+    console.log("wait is over message was received");
+
+    // waitListed.innerText = "";
+    toggleWaitListBtn(true);
+    waitIsOverModal(true);
 });
 
 socket.on("waiting for other players", () => {
     // waitListBtn.removeEventListener("click", addMeToWaitList);
-    waitListBtn.style.display = "none";
-    cancelWaitListBtn.style.display = "block";
-    waitingForPlayers();
+    toggleWaitListBtn(true);
+    // waitingForPlayers();
 });
+
+socket.on("get play game confirmation", ({ socketId }) => {
+    console.log("get play game confirmation");
+    socket.emit("confirmation response", myResponse);
+    myResponse.confirmation = null;
+    console.log({ myResponse });
+    toggleWaitListBtn(false);
+    waitIsOverModal(false);
+});
+
 // Modal placeholder:
 
 // Get the modal
@@ -77,16 +127,29 @@ const btn = document.getElementById("myBtn");
 const span = document.getElementsByClassName("close-modal")[0];
 
 // When the user clicks on the button, open the modal
-function waitIsOverModal() {
-    modal.style.display = "block";
+function waitIsOverModal(bool) {
+
+    if (bool) {
+
+        modal.style.display = "block";
+        confirmBtn.addEventListener("click", pushResponse);
+        cancelBtn.addEventListener("click", pushResponse);
+    } else {
+
+        modal.style.display = "none";
+        confirmBtn.removeEventListener("click", pushResponse);
+        cancelBtn.removeEventListener("click", pushResponse);
+    }
+
+    // ===================================================================
     // TODO: place countdown on server thru emit msg:
     // socket.emit("countdown started", { username });
-    countdownClock();
+    // countdownClock();
 }
 
-function waitingForPlayers() {
-    waitListed.innerText = "waiting for opponent...";
-}
+// function waitingForPlayers() {
+//     waitListed.innerText = "waiting for opponent...";
+// }
 
 let countdownToStart;
 let countdownInterval;
@@ -98,7 +161,31 @@ function startGameFuncTest() {
     socket.emit("startGame", { username });
 }
 
+socket.on("start game", (players) => {
+    console.log(players);
+    window.location.href = "/game";
+});
+
+socket.on("opponent did not confirm", (responseArray) => {
+    console.log("opponent did not confirm");
+    toggleWaitListBtn(true);
+
+    console.log(responseArray);
+});
+socket.on("you did not confirm", (responseArray) => {
+    console.log("you did not confirm");
+    console.log(responseArray);
+});
 // ====================== Function to Set Interval and Timeout ======================
+
+socket.on("render countdown clock", ({ seconds }) => {
+    console.log("render countdown clock emit message received");
+    renderCountdownClock(seconds);
+});
+
+function renderCountdownClock(seconds) {
+    document.getElementById("timer").innerText = seconds;
+}
 
 function countdownClock() {
     console.log("countdown started!");
@@ -129,7 +216,7 @@ function stopCountdownClock() {
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function () {
-    stopCountdownClock();
+    // stopCountdownClock();
     modal.style.display = "none";
 };
 
@@ -189,7 +276,7 @@ function outputMsg(message) {
     newDiv.classList.add("message");
 
     if (message.username === "me") {
-        newClass = "msg-self"
+        newClass = "msg-self";
     }
 
     if (message.username === "Boom-Bot") {
@@ -213,7 +300,29 @@ function outputRoomName(room) {
 // Add user list to DOM:
 function outputUsers(users) {
     userList.innerHTML = `
-    ${users.map((user) => `<li>${user.username}</li>`).join("")}
+    ${users
+        .map(
+            (user) =>
+                `<li>${user.username}  <span id="sub-text">< socket: ${user.id} ></span></li>`
+        )
+        .join("")}
     `;
     // console.log(users);
 }
+
+// =============================== Fullscreen =========================================
+
+// const bodyTest = document.querySelector("body");
+// bodyTest.addEventListener("click", toggleFullscreen);
+
+// function toggleFullscreen() {
+//     if (!document.fullscreenElement) {
+//         document.body.requestFullscreen().catch((err) => {
+//             alert(
+//                 `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
+//             );
+//         });
+//     } else {
+//         document.exitFullscreen();
+//     }
+// }

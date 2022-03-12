@@ -4,6 +4,7 @@ function waitListJoinsRoom() {
 
     // console.log(activeRoomsObject);
 
+    // TODO: add getter for currentRoom in roomsObj per username:
     let nextRoomName = createRoomName().toString();
     // let newArray = [];
 

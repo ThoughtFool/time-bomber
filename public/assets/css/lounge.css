@@ -348,11 +348,16 @@ a {
     align-items: flex-end;
 }
 
-.modal-btn {
+.modal-btn-holder {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 25%;
+}
+
+#sub-text {
+    color: rgba(183, 238, 240, 0.651);
+    font-size: .75rem;
 }
 
 /* .confirm-btn {

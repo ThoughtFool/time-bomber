@@ -16,9 +16,15 @@
 
         <div class="button-row">
             <!-- TODO: Add functions to alert players -->
-            <div class="modal-btn confirm-btn"><a class="btn" href="/game"><span>CONFIRM</span></a></div>
-            <div class="modal-btn divider"></div>
-            <div class="modal-btn cancel-btn"><a class="btn" href="/game-lounge"><span>CANCEL</span></a></div>
+            <div class="modal-btn-holder">
+                <div id="confirm-btn" class="btn" data-response=true>CONFIRM</div>
+            </div>
+            <!-- <div class="modal-btn-holder confirm-btn"><a class="btn" href="/game"><span>CONFIRM</span></a></div> -->
+            <div class="modal-btn-holder divider"></div>
+            <div class="modal-btn-holder">
+                <div id="cancel-btn" class="btn" data-response=false>CANCEL</div>
+            </div>
+            <!-- <div class="modal-btn-holder cancel-btn"><a class="btn" href="/game-lounge"><span>CANCEL</span></a></div> -->
         </div>
 
         <!-- <div>

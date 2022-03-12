@@ -1,6 +1,8 @@
 const activeRoomsObject = {
 
+    // TODO: need to add container logic to separate multiple requests from room full of users:
     "waitListArray": [], 
+    "responseArray": [],
     
     "lounge": {
         playerListArray: [

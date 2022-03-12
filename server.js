@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV === "development") {
+// if (process.env.NODE_ENV === "development") {
 require("dotenv").config();
-}
+// }
 
 const express = require("express");
 const app = express();
@@ -186,6 +186,7 @@ io.on("connection", (socket) => {
             return;
         } else {
             alertPlayers(ready);
+            countdownClock();
         }
     });
 
@@ -198,11 +199,11 @@ io.on("connection", (socket) => {
         let ready = await removeWaitList(obj.username);
         console.log(activeRoomsObject.getRoomCount("lounge"));
         if (!ready) {
-            socket.emit("waiting for other players", {
+            socket.emit("remove wait list button", {
                 loungeCount: activeRoomsObject.getRoomCount("lounge"),
             });
             return;
-        } 
+        }
     });
 
     // ====================== Welcome to Lounge (socket) ======================
@@ -258,6 +259,12 @@ io.on("connection", (socket) => {
         clientInfo.clientId = socket.id;
         clients.push(clientInfo);
         console.log(clients);
+    });
+
+    socket.on("confirmation response", async (response) => {
+        console.log("confirmation response");
+        console.log({ response });
+        await addConfirmation(response);
     });
 
     // socket.emit("connecting", {id: socket.id});
@@ -321,8 +328,14 @@ io.on("connection", (socket) => {
     // ====================== Start Game (socket) ======================
 
     socket.on("startGame", () => {
-        socket.emit("startGame");
+        // socket.emit("startGame");
+        console.log("startGame message received");
     });
+
+    function startGameFuncTest() {
+        // alert("player has left waitlist");
+        socket.emit("startGame", { username });
+    }
 
     // ====================== Disconnect (socket) ======================
 
@@ -517,7 +530,7 @@ io.on("connection", (socket) => {
         }
     });
 
-    function alertPlayers({ nextRoomName }) {
+    function alertPlayers({ nextRoomName }, next) {
         socket.emit("wait is over", {
             players: activeRoomsObject[nextRoomName].playerListArray,
             nextRoomName: nextRoomName,
@@ -532,7 +545,104 @@ io.on("connection", (socket) => {
     socket.on("game over", () => {
         io.emit("game over");
     });
+
+    function countdownClock() {
+        console.log("countdown started!");
+
+        let seconds = 20;
+        console.log(seconds);
+
+        function incrementSeconds() {
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                getResponseConfirmation();
+            } else {
+                seconds -= 1;
+                // document.getElementById("timer").innerText = seconds;
+                io.emit("render countdown clock", { seconds });
+            }
+        }
+
+        countdownInterval = setInterval(incrementSeconds, 1000);
+        // countdownToStart = setTimeout(startGameFuncTest, 10000);
+    }
+
+    function getResponseConfirmation() {
+        console.log("getResponseConfirmation");
+        const user = getCurrentUser(socket.id);
+        console.log(socket.id);
+
+        io.emit("get play game confirmation", { socketId: user.id });
+    }
+
+    let responseArray = [];
+    async function addConfirmation(response) {
+        const { activeRoomsObject } = require("./room-logic/index");
+        const { confirmation, username, socketId } = response;
+        // response.id = socket.id;
+        console.log({ confirmation });
+        console.log({ username });
+        console.log({ socketId });
+        console.log(`After: ${activeRoomsObject.responseArray.length}`);
+
+        if (activeRoomsObject.responseArray.length < 2) {
+            activeRoomsObject.responseArray.push(response);
+            console.log(activeRoomsObject.responseArray);
+        } else {
+            console.log("too many or too little");
+        }
+
+        console.log(`After: ${activeRoomsObject.responseArray.length}`);
+
+        if (activeRoomsObject.responseArray.length >= 2) {
+            await handleResponse(activeRoomsObject.responseArray);
+            activeRoomsObject.responseArray = [];
+        }
+    }
+
+    function handleResponse([p1, p2]) {
+        console.log("handleResponse function fires");
+        console.log({ p1 });
+        console.log({ p2 });
+        if (p1.confirmation === "true" && p2.confirmation === "true") {
+            io.emit("start game", activeRoomsObject.responseArray);
+            // app.get('/game', (req, res) => {
+            //     res.render('index');
+            // });
+        } else if (
+            (p1.confirmation === "true" && p2.confirmation === "false") ||
+            (p1.confirmation === "true" && p2.confirmation === null)
+        ) {
+            console.log("p1 = true, p2 = false/null");
+
+            io.to(p1.socketId).emit("opponent did not confirm", activeRoomsObject.responseArray);
+            io.to(p2.socketId).emit("you did not confirm", activeRoomsObject.responseArray);
+        } else if (
+            (p1.confirmation === "false" && p2.confirmation === "true") ||
+            (p1.confirmation === null && p2.confirmation === "true")
+        ) {
+            console.log("p1 = false/null, p2 = true");
+
+            io.to(p2.socketId).emit("opponent did not confirm", activeRoomsObject.responseArray);
+            io.to(p1.socketId).emit("you did not confirm", activeRoomsObject.responseArray);
+        } else if (
+            (p1.confirmation === "false" && p2.confirmation === "false") ||
+            (p1.confirmation === null && p2.confirmation === null)
+        ) {
+            console.log("p1 = false/null, p2 = false/null");
+
+            io.emit("you did not confirm", activeRoomsObject.responseArray);
+        } else {
+        }
+    }
 });
+
+function stopCountdownClock() {
+    // TODO: emit to user to return to lounge.
+    // TODO: emit to other users to return to lounge and ask to be added to waitlist again.
+    clearInterval(countdownInterval);
+    clearTimeout(countdownToStart);
+}
 
 server.listen(PORT, () =>
     console.log(`Time Bomber app listening on PORT ${PORT}!`)
